@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pillr">
+<meta name="theme-color" content="#05050a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Pillr</title>
+<style>
+/* ── FONTS (embedded subset for offline) ─────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #05050a;
+  --s1:      #0e0e18;
+  --s2:      #141422;
+  --s3:      #1c1c2e;
+  --brd:     rgba(255,255,255,.08);
+  --brd2:    rgba(255,255,255,.14);
+  --lime:    #c8ff00;
+  --limed:   rgba(200,255,0,.12);
+  --pink:    #ff2d6b;
+  --pinkd:   rgba(255,45,107,.12);
+  --cyan:    #00e5ff;
+  --cyand:   rgba(0,229,255,.1);
+  --orange:  #ff7a00;
+  --oranged: rgba(255,122,0,.12);
+  --txt:     #f0f0f8;
+  --txt2:    #8080a0;
+  --txt3:    #404058;
+  --r:       14px;
+  --rsm:     9px;
+  --safe-t:  env(safe-area-inset-top, 0px);
+  --safe-b:  env(safe-area-inset-bottom, 0px);
+}
+
+html { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-size: 13px;
+  min-height: 100%;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* subtle grain */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:.25;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23f)' opacity='.04'/%3E%3C/svg%3E");
+}
+
+/* ── LAYOUT ──────────────────────────────────────────────────── */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* ── HEADER ──────────────────────────────────────────────────── */
+header {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(5,5,10,.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--brd);
+  padding-top: var(--safe-t);
+}
+
+.header-inner {
+  display: flex; align-items: center; gap: 0;
+  padding: 0 16px;
+  height: 52px;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 19px;
+  color: var(--lime); letter-spacing: -1px;
+  margin-right: 20px; flex-shrink: 0;
+}
+
+.tabs {
+  display: flex; flex: 1;
+  overflow-x: auto; scrollbar-width: none;
+  gap: 0;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  padding: 0 14px; height: 52px;
+  display: flex; align-items: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--txt3); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.tab:active { opacity: .7; }
+.tab.on { color: var(--lime); border-bottom-color: var(--lime); }
+
+/* ── MAIN ────────────────────────────────────────────────────── */
+main {
+  flex: 1;
+  padding: 20px 16px calc(20px + var(--safe-b));
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative; z-index: 1;
+}
+
+.pg { display: none; }
+.pg.on {
+  display: block;
+  animation: pgIn .2s cubic-bezier(.16,1,.3,1);
+}
+@keyframes pgIn {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── TYPOGRAPHY ──────────────────────────────────────────────── */
+.page-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: clamp(26px,7vw,40px);
+  letter-spacing: -1.5px; line-height: 1;
+  color: var(--txt); margin-bottom: 4px;
+}
+
+.page-sub {
+  font-size: 12px; color: var(--txt2); margin-bottom: 20px;
+}
+
+.sec-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--txt3); margin: 24px 0 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sec-label::after { content:''; flex:1; height:1px; background:var(--brd); }
+.sec-label:first-child { margin-top: 0; }
+
+/* ── CARDS ───────────────────────────────────────────────────── */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  padding: 18px;
+  margin-bottom: 12px;
+  position: relative; overflow: hidden;
+}
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 13px;
+  color: var(--txt); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* ── INTAKE OVERVIEW (top of today) ─────────────────────────── */
+.intake-overview {
+  background: var(--s1);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.intake-overview-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--brd);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.intake-overview-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--txt2);
+}
+
+.intake-row {
+  display: flex; align-items: center;
+  padding: 12px 16px;
+  gap: 14px;
+  border-bottom: 1px solid var(--brd);
+  transition: background .15s;
+}
+.intake-row:last-child { border-bottom: none; }
+.intake-row.now-active { background: rgba(200,255,0,.04); }
+.intake-row.is-past { opacity: .55; }
+
+.intake-time {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 22px;
+  letter-spacing: -1px; min-width: 58px;
+  flex-shrink: 0;
+}
+
+.intake-details { flex: 1; }
+.intake-window {
+  font-size: 11px; color: var(--txt2); line-height: 1.7;
+}
+.intake-window strong { color: var(--txt); }
+
+.intake-status {
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+}
+
+/* ── TIMELINE BAR ────────────────────────────────────────────── */
+.tl-wrap {
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--brd);
+  background: var(--s2);
+}
+
+.tl-bar {
+  position: relative; height: 8px;
+  background: var(--s3); border-radius: 4px;
+  margin-bottom: 6px; overflow: visible;
+}
+
+.tl-seg {
+  position: absolute; top: 0; height: 100%; border-radius: 4px;
+}
+
+.tl-now {
+  position: absolute; top: -4px;
+  width: 2px; height: 16px;
+  background: #fff; border-radius: 1px;
+  transform: translateX(-50%); z-index: 5;
+}
+.tl-now::after {
+  content: 'NU';
+  position: absolute; top: -13px; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Syne', sans-serif;
+  font-size: 8px; font-weight: 700;
+  color: #fff; white-space: nowrap;
+  letter-spacing: .08em;
+}
+
+.tl-hours {
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: var(--txt3);
+  font-family: 'Syne', sans-serif; font-weight: 600;
+}
+
+/* ── BIG TAKEN BUTTON ────────────────────────────────────────── */
+.taken-big {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-top: 10px;
+}
+
+.taken-btn {
+  padding: 13px 10px;
+  border-radius: var(--rsm);
+  border: 1px solid var(--brd2);
+  background: var(--s2);
+  color: var(--txt2);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; text-align: center;
+  transition: all .15s;
+  -webkit-user-select: none;
+}
+.taken-btn:active { transform: scale(.97); }
+.taken-btn.yes {
+  background: var(--limed);
+  color: var(--lime);
+  border-color: rgba(200,255,0,.25);
+}
+.taken-btn.no {
+  background: var(--pinkd);
+  color: var(--pink);
+  border-color: rgba(255,45,107,.25);
+}
+
+/* ── LOG SECTION ─────────────────────────────────────────────── */
+.dose-log {
+  background: var(--s1);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.dose-log-header {
+  display: flex; align-items: center;
+  padding: 14px 16px; gap: 12px;
+  cursor: pointer; user-select: none;
+  -webkit-user-select: none;
+}
+.dose-log-header:active { background: var(--s2); }
+
+.dlh-time {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 20px;
+  letter-spacing: -1px; flex-shrink: 0;
+}
+
+.dlh-meta { flex: 1; }
+.dlh-taken { flex-shrink: 0; font-size: 16px; }
+.dlh-chevron {
+  font-size: 10px; color: var(--txt3);
+  transition: transform .2s; flex-shrink: 0;
+}
+.dose-log.open .dlh-chevron { transform: rotate(180deg); }
+
+.dose-log-body {
+  display: none;
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--brd);
+}
+.dose-log.open .dose-log-body { display: block; }
+
+/* ── SCORE ROW ───────────────────────────────────────────────── */
+.score-row {
+  display: flex; gap: 6px; margin: 14px 0 10px;
+  flex-wrap: wrap;
+}
+
+.score-btn {
+  flex: 1; min-width: 44px;
+  padding: 10px 4px;
+  border-radius: var(--rsm);
+  border: 1px solid var(--brd);
+  background: var(--bg);
+  font-size: 18px; text-align: center;
+  cursor: pointer;
+  transition: all .15s;
+  -webkit-user-select: none;
+}
+.score-btn:active { transform: scale(.92); }
+.score-btn.sel {
+  background: var(--limed);
+  border-color: rgba(200,255,0,.3);
+  transform: scale(1.08);
+}
+
+/* ── TEXTAREA ────────────────────────────────────────────────── */
+textarea, input[type=text], input[type=time],
+input[type=date], input[type=number], select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--brd2);
+  border-radius: var(--rsm);
+  color: var(--txt);
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  padding: 10px 12px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color .2s;
+}
+textarea:focus, input:focus, select:focus {
+  border-color: var(--lime);
+  box-shadow: 0 0 0 3px rgba(200,255,0,.1);
+}
+textarea { resize: vertical; min-height: 70px; }
+select option { background: var(--s2); }
+
+.form-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--txt3); margin-bottom: 5px; margin-top: 12px;
+  display: block;
+}
+.form-label:first-child { margin-top: 0; }
+
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+
+/* ── BUTTONS ─────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; border-radius: var(--rsm);
+  border: none; cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase;
+  transition: all .15s; white-space: nowrap;
+  -webkit-user-select: none;
+}
+.btn:active { transform: scale(.97); }
+
+.btn-lime { background: var(--lime); color: #000; }
+.btn-lime:active { background: #b8ee00; }
+
+.btn-ghost {
+  background: transparent; color: var(--txt2);
+  border: 1px solid var(--brd2);
+}
+.btn-ghost:active { color: var(--txt); }
+
+.btn-sm { padding: 7px 13px; font-size: 11px; }
+
+.btn-icon {
+  padding: 7px 9px; font-size: 13px;
+  background: transparent; color: var(--txt3);
+  border: 1px solid transparent; border-radius: var(--rsm);
+}
+.btn-icon:active { color: var(--pink); background: var(--pinkd); }
+
+.btn-row {
+  display: flex; gap: 8px; margin-top: 16px;
+  flex-wrap: wrap; align-items: center;
+}
+
+.btn-block {
+  width: 100%; display: flex;
+  align-items: center; justify-content: center;
+}
+
+/* ── DASHED ADD BUTTON ───────────────────────────────────────── */
+.add-btn {
+  width: 100%; padding: 13px;
+  background: var(--s2);
+  border: 1px dashed var(--brd2);
+  border-radius: var(--r);
+  color: var(--txt2);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; text-align: center;
+  transition: all .2s; margin-top: 4px;
+  -webkit-user-select: none;
+}
+.add-btn:active { color: var(--lime); border-color: rgba(200,255,0,.3); background: var(--limed); }
+
+/* ── TAGS ────────────────────────────────────────────────────── */
+.tag {
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 20px;
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.tag-mr  { background: var(--cyand);   color: var(--cyan);   border: 1px solid rgba(0,229,255,.2); }
+.tag-ir  { background: var(--oranged); color: var(--orange); border: 1px solid rgba(255,122,0,.2); }
+.tag-on  { background: var(--limed);   color: var(--lime);   border: 1px solid rgba(200,255,0,.25); }
+.tag-off { background: var(--s3);      color: var(--txt3);   border: 1px solid var(--brd); }
+.tag-fut { background: var(--s2);      color: var(--txt2);   border: 1px solid var(--brd2); }
+
+/* ── PHASE CARD ──────────────────────────────────────────────── */
+.phase-card {
+  background: var(--s1);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  margin-bottom: 10px; overflow: hidden;
+}
+
+.pc-header {
+  display: flex; align-items: center;
+  padding: 14px 16px; gap: 10px;
+  cursor: pointer; user-select: none;
+  -webkit-user-select: none;
+}
+.pc-header:active { background: var(--s2); }
+
+.pc-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 13px;
+  color: var(--txt); flex: 1;
+}
+.pc-dates { font-size: 11px; color: var(--txt3); }
+
+.pc-body {
+  display: none; padding: 0 16px 16px;
+  border-top: 1px solid var(--brd);
+}
+.phase-card.open .pc-body { display: block; }
+
+.pd-row {
+  display: flex; align-items: center;
+  padding: 10px 0; gap: 10px;
+  border-bottom: 1px solid var(--brd);
+  flex-wrap: wrap;
+}
+.pd-row:last-of-type { border-bottom: none; }
+.pd-time {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 15px;
+  min-width: 48px;
+}
+.pd-window { flex: 1; font-size: 11px; color: var(--txt2); }
+
+/* ── HISTORY ─────────────────────────────────────────────────── */
+.hist-day {
+  background: var(--s1);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  margin-bottom: 10px; overflow: hidden;
+}
+
+.hd-header {
+  display: flex; align-items: center;
+  padding: 13px 16px; gap: 12px;
+  cursor: pointer; user-select: none;
+  -webkit-user-select: none;
+}
+.hd-header:active { background: var(--s2); }
+
+.hd-date {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 13px; min-width: 80px;
+}
+
+.hd-summary { flex: 1; font-size: 11px; color: var(--txt2); line-height: 1.5; }
+
+.hd-body {
+  display: none; padding: 0 16px 14px;
+  border-top: 1px solid var(--brd);
+}
+.hist-day.open .hd-body { display: block; }
+
+.he-row {
+  display: flex; align-items: flex-start;
+  padding: 10px 0; gap: 10px;
+  border-bottom: 1px solid var(--brd);
+  flex-wrap: wrap;
+}
+.he-row:last-child { border-bottom: none; }
+.he-time { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; min-width: 48px; flex-shrink: 0; }
+.he-detail { flex: 1; font-size: 12px; color: var(--txt2); line-height: 1.7; }
+
+.day-note-block {
+  margin-top: 10px; padding: 10px 12px;
+  background: var(--s2); border-radius: var(--rsm);
+  font-size: 12px; color: var(--txt2); line-height: 1.6;
+}
+.day-note-block strong { color: var(--txt); font-family: 'Syne', sans-serif; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* ── ALERT ───────────────────────────────────────────────────── */
+.alert-warn {
+  background: var(--oranged);
+  border: 1px solid rgba(255,122,0,.2);
+  color: var(--orange);
+  padding: 10px 13px; border-radius: var(--rsm);
+  font-size: 12px; margin-bottom: 12px; line-height: 1.5;
+}
+
+.info-box {
+  background: var(--cyand);
+  border: 1px solid rgba(0,229,255,.15);
+  color: var(--cyan);
+  padding: 10px 13px; border-radius: var(--rsm);
+  font-size: 12px; margin-bottom: 14px; line-height: 1.5;
+}
+
+/* ── MODAL ───────────────────────────────────────────────────── */
+#modal-wrap {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: var(--safe-b);
+}
+#modal-wrap.show { display: flex; animation: fadeWrap .15s; }
+@keyframes fadeWrap { from { opacity:0; } to { opacity:1; } }
+
+#modal-box {
+  background: var(--s1);
+  border: 1px solid var(--brd2);
+  border-radius: var(--r) var(--r) 0 0;
+  padding: 20px 18px calc(18px + var(--safe-b));
+  width: 100%; max-width: 680px;
+  max-height: 92vh; overflow-y: auto;
+  animation: slideUp .22s cubic-bezier(.16,1,.3,1);
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity:0; }
+  to   { transform: translateY(0);    opacity:1; }
+}
+
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 18px;
+  letter-spacing: -.5px; margin-bottom: 18px;
+}
+
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--brd2); border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+/* ── TOAST ───────────────────────────────────────────────────── */
+#toast {
+  position: fixed; bottom: calc(24px + var(--safe-b));
+  left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--lime); color: #000;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px;
+  padding: 9px 20px; border-radius: 99px; z-index: 9000;
+  transition: transform .28s cubic-bezier(.16,1,.3,1);
+  white-space: nowrap; pointer-events: none;
+}
+
+/* ── SETTINGS BLOCKS ─────────────────────────────────────────── */
+.sblock {
+  background: var(--s2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r);
+  padding: 16px; margin-bottom: 12px;
+}
+.sblock-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--txt2); margin-bottom: 12px;
+}
+.sgrid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.sfield label {
+  display: block; font-size: 10px; color: var(--txt3);
+  letter-spacing: .1em; text-transform: uppercase;
+  font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 5px;
+}
+.sfield .iu { display: flex; align-items: center; gap: 7px; }
+.sfield .iu input { width: 72px; flex-shrink: 0; }
+.sfield .iu span { color: var(--txt2); font-size: 11px; }
+
+/* ── DOSE SLOT ───────────────────────────────────────────────── */
+.dslot {
+  background: var(--bg);
+  border: 1px solid var(--brd2);
+  border-radius: var(--rsm);
+  padding: 12px; margin-top: 10px;
+}
+.dslot-hd {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--txt3); margin-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+/* ── EMPTY ───────────────────────────────────────────────────── */
+.empty {
+  text-align: center; padding: 44px 16px;
+  color: var(--txt2);
+}
+.empty-icon { font-size: 32px; margin-bottom: 10px; }
+.empty-text { font-size: 13px; line-height: 1.7; }
+
+/* ── CHEVRON ─────────────────────────────────────────────────── */
+.chev { font-size: 10px; color: var(--txt3); transition: transform .2s; }
+.open .chev { transform: rotate(180deg); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="header-inner">
+      <div class="logo">pillr</div>
+      <nav class="tabs">
+        <div class="tab on"  onclick="go('today')">Vandaag</div>
+        <div class="tab"     onclick="go('schema')">Schema</div>
+        <div class="tab"     onclick="go('history')">Historiek</div>
+        <div class="tab"     onclick="go('settings')">Instellingen</div>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div id="pg-today"    class="pg on"></div>
+    <div id="pg-schema"   class="pg"></div>
+    <div id="pg-history"  class="pg"></div>
+    <div id="pg-settings" class="pg"></div>
+  </main>
+</div>
+
+<div id="modal-wrap" onclick="modalBg(event)">
+  <div id="modal-box"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════════ */
+const DEFS = { mr:{ onset:60, duration:6 }, ir:{ onset:30, duration:4 } };
+
+let S = {
+  settings: { mr:{...DEFS.mr}, ir:{...DEFS.ir} },
+  phases: [],
+  logs: {}
+  // logs[date] = {
+  //   snap: {mr,ir},
+  //   doses: [{time,type,mg,taken,score,note,extra}],
+  //   dayNote: "",
+  //   reflection: ""
+  // }
+};
+
+function load(){
+  try{
+    const d = localStorage.getItem('pillr3');
+    if(d){ const p=JSON.parse(d); S={...S,...p}; S.settings.mr={...DEFS.mr,...(S.settings?.mr||{})}; S.settings.ir={...DEFS.ir,...(S.settings?.ir||{})}; S.phases=S.phases||[]; S.logs=S.logs||{}; }
+  }catch(e){}
+}
+function save(){ localStorage.setItem('pillr3', JSON.stringify(S)); }
+
+/* ════════════════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════════════════ */
+const pad = n => String(n).padStart(2,'0');
+const t2m = t => { const[h,m]=t.split(':').map(Number); return h*60+m; };
+const m2t = m => pad(Math.floor(m/60)%24)+':'+pad(m%60);
+const uid = () => Math.random().toString(36).slice(2,8);
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const nowMin = () => { const n=new Date(); return n.getHours()*60+n.getMinutes(); };
+const todayStr = () => { const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); };
+
+function dutchDay(ds){ return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'long'}); }
+function dutchFull(ds){ return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'long',day:'numeric',month:'long'}); }
+function dutchShort(ds){ return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'short',day:'numeric',month:'short'}); }
+
+function cfg(type, snap){ const s=snap||S.settings; return type==='MR'?s.mr:s.ir; }
+
+function calcW(time, type, snap){
+  const c=cfg(type,snap), intake=t2m(time);
+  return { intake, start: intake+c.onset, end: intake+c.onset+Math.round(c.duration*60) };
+}
+
+function activePhase(ds){ return S.phases.find(p=>p.start<=ds&&(!p.end||p.end>=ds))||null; }
+
+function dayLog(ds){
+  ds = ds || todayStr();
+  if(!S.logs[ds]){
+    const ph=activePhase(ds);
+    S.logs[ds]={
+      snap: JSON.parse(JSON.stringify(S.settings)),
+      doses: ph&&ph.doses ? ph.doses.map(d=>({...d,taken:null,score:0,note:'',extra:false})) : [],
+      dayNote:'', reflection:''
+    };
+    save();
+  }
+  return S.logs[ds];
+}
+
+/* ════════════════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════════════════ */
+let curTab = 'today';
+const PAGES = ['today','schema','history','settings'];
+const REND  = { today:renderToday, schema:renderSchema, history:renderHistory, settings:renderSettings };
+
+function go(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  document.querySelectorAll('.tab')[PAGES.indexOf(id)].classList.add('on');
+  curTab=id; REND[id]();
+}
+
+/* ════════════════════════════════════════════════════════
+   TODAY
+════════════════════════════════════════════════════════ */
+function renderToday(){
+  const today=todayStr(), log=dayLog(today), snap=log.snap, nm=nowMin();
+  const doses=(log.doses||[]).map((d,i)=>({...d,i,...calcW(d.time,d.type,snap)}));
+  const day=dutchDay(today), dd=new Date().toLocaleDateString('nl-BE',{day:'numeric',month:'long',year:'numeric'});
+  const ph=activePhase(today);
+
+  // overlap check
+  let ow='';
+  for(let i=0;i<doses.length-1;i++){
+    const a=doses[i],b=doses[i+1];
+    if(a.taken!==false&&b.taken!==false&&b.start<a.end){
+      ow+=`⚠ Overlap dosis ${i+1} & ${i+2}: ~${a.end-b.start} min. `;
+    }
+  }
+
+  const COLS=['#c8ff00','#00e5ff','#ff7a00','#ff2d6b'];
+  const SE=['😞','😐','🙂','😊','🤩'];
+
+  // INTAKE OVERVIEW rows
+  const overviewRows = doses.map((d,i)=>{
+    const col=COLS[i%4];
+    const isPast=nm>d.end, isActive=nm>=d.start&&nm<=d.end, isOnset=nm>=d.intake&&nm<d.start;
+    let stag='';
+    if(d.taken===false) stag=`<span class="tag tag-off">❌ overgeslagen</span>`;
+    else if(isActive)   stag=`<span class="tag tag-on">● werkzaam</span>`;
+    else if(isOnset)    stag=`<span class="tag" style="background:var(--oranged);color:var(--orange);border:1px solid rgba(255,122,0,.2)">⟳ aanloop</span>`;
+    else if(isPast)     stag=`<span class="tag tag-off">uitgewerkt</span>`;
+    else                stag=`<span class="tag tag-fut">gepland</span>`;
+
+    return `<div class="intake-row ${isActive?'now-active':''} ${isPast&&d.taken!==true?'is-past':''}">
+      <div class="intake-time" style="color:${col}">${d.time}</div>
+      <div class="intake-details">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;flex-wrap:wrap">
+          <span class="tag tag-${d.type.toLowerCase()}">${d.type} ${d.mg}mg</span>
+          ${stag}
+        </div>
+        <div class="intake-window">
+          Effect <strong>${m2t(d.start)}</strong> – <strong>${m2t(d.end)}</strong>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // TIMELINE
+  const tlHTML = doses.length>0 ? buildTL(doses,nm) : '';
+
+  // LOG sections per dose
+  const logSections = doses.map((d,i)=>{
+    const col=COLS[i%4];
+    const takenIcon = d.taken===true?'✓':d.taken===false?'✕':'–';
+    return `
+    <div class="dose-log" id="dl-${i}">
+      <div class="dose-log-header" onclick="toggleEl('dl-${i}')">
+        <div class="dlh-time" style="color:${col}">${d.time}</div>
+        <div class="dlh-meta">
+          <span class="tag tag-${d.type.toLowerCase()}">${d.type} ${d.mg}mg</span>
+          ${d.extra?'<span class="tag" style="background:var(--oranged);color:var(--orange);border:1px solid rgba(255,122,0,.2);margin-left:4px">extra</span>':''}
+        </div>
+        <div class="dlh-taken">${d.taken===true?'✅':d.taken===false?'❌':'⬜'}</div>
+        ${d.extra?`<button class="btn-icon" onclick="event.stopPropagation();rmExtra(${i})" style="font-size:12px;padding:4px 7px">✕</button>`:''}
+        <div class="dlh-chevron chev">▼</div>
+      </div>
+      <div class="dose-log-body">
+        <div class="form-label" style="margin-top:12px">Genomen?</div>
+        <div class="taken-big">
+          <button class="taken-btn ${d.taken===true?'yes':''}" onclick="setTaken(${i},true)">✓ Ja</button>
+          <button class="taken-btn ${d.taken===false?'no':''}"  onclick="setTaken(${i},false)">✕ Nee</button>
+        </div>
+        ${d.taken!==null?`<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="setTaken(${i},null)">↩ Reset</button>`:''}
+
+        <div class="form-label">Gevoel</div>
+        <div class="score-row">
+          ${SE.map((e,n)=>`<button class="score-btn ${d.score===n+1?'sel':''}" onclick="setScore(${i},${n+1})">${e}</button>`).join('')}
+        </div>
+
+        <div class="form-label">Opmerking bij dosis</div>
+        <input type="text" placeholder="bv. last van agitatie, slecht zicht..." value="${esc(d.note)}" oninput="setNote(${i},this.value)">
+      </div>
+    </div>`;
+  }).join('');
+
+  const el=document.getElementById('pg-today');
+  el.innerHTML=`
+    <div class="page-title">${day.charAt(0).toUpperCase()+day.slice(1)}</div>
+    <div class="page-sub">${dd}${ph?` · ${esc(ph.name)}`:''}</div>
+
+    ${ow?`<div class="alert-warn">${ow}</div>`:''}
+
+    ${doses.length>0?`
+    <div class="intake-overview">
+      <div class="intake-overview-header">
+        <div class="intake-overview-title">Innameschema vandaag</div>
+      </div>
+      ${overviewRows}
+      ${tlHTML}
+    </div>`:
+    `<div class="empty"><div class="empty-icon">💊</div><div class="empty-text">Geen actieve fase.<br>Maak een schema aan via <strong>Schema</strong>.</div></div>`}
+
+    ${doses.length>0?`<div class="sec-label">Log per dosis</div>${logSections}`:''}
+
+    ${doses.length>0||ph?`<button class="add-btn" onclick="openExtraDose()">✚ Extra dosis toevoegen</button>`:''}
+
+    <div class="sec-label" style="margin-top:20px">Dagnotitie</div>
+    <div class="card" style="padding:14px">
+      <div class="form-label" style="margin-top:0">Algemene notitie</div>
+      <textarea placeholder="Hoe was de dag algemeen? Energie, slaap, stemming..." oninput="setDayField('dayNote',this.value)">${esc(log.dayNote)}</textarea>
+      <div class="form-label">Reflectie / hypothese</div>
+      <textarea placeholder="Vermoedens, vragen voor de dokter, observaties over de werking..." oninput="setDayField('reflection',this.value)">${esc(log.reflection)}</textarea>
+    </div>
+  `;
+}
+
+function buildTL(doses, nm){
+  const RS=6*60, RE=24*60, RNG=RE-RS;
+  const pct=m=>Math.max(0,Math.min(100,(m-RS)/RNG*100)).toFixed(2);
+  const COLS=['#c8ff00','#00e5ff','#ff7a00','#ff2d6b'];
+  let segs='';
+  doses.forEach((d,i)=>{
+    if(d.taken===false) return;
+    const col=COLS[i%4];
+    const ow=pct(d.start)-pct(d.intake);
+    if(ow>0) segs+=`<div class="tl-seg" style="left:${pct(d.intake)}%;width:${ow}%;background:${col};opacity:.2;border-radius:4px 0 0 4px"></div>`;
+    segs+=`<div class="tl-seg" style="left:${pct(d.start)}%;width:${pct(d.end)-pct(d.start)}%;background:${col};opacity:.8"></div>`;
+  });
+  const nowP=nm>=RS&&nm<=RE?pct(nm):null;
+  const hours=[6,8,10,12,14,16,18,20,22,24];
+  return `
+  <div class="tl-wrap">
+    <div class="tl-bar">
+      ${segs}
+      ${nowP!==null?`<div class="tl-now" style="left:${nowP}%"></div>`:''}
+    </div>
+    <div class="tl-hours">${hours.map(h=>`<span>${h===24?'0':h}u</span>`).join('')}</div>
+  </div>`;
+}
+
+function toggleEl(id){ document.getElementById(id).classList.toggle('open'); }
+
+function setTaken(i,v){
+  const log=dayLog(); log.doses[i].taken=v; save(); renderToday();
+}
+function setScore(i,v){
+  const log=dayLog(); if(log.doses[i].score===v) log.doses[i].score=0; else log.doses[i].score=v; save(); renderToday();
+}
+function setNote(i,v){ const log=dayLog(); log.doses[i].note=v; save(); }
+function setDayField(field,v){ const log=dayLog(); log[field]=v; save(); }
+function rmExtra(i){ const log=dayLog(); log.doses.splice(i,1); save(); renderToday(); }
+
+function openExtraDose(){
+  const n=new Date();
+  openModal(`
+    <div class="modal-handle"></div>
+    <div class="modal-title">✚ Extra dosis</div>
+    <div class="form-label">Tijdstip</div>
+    <input type="time" id="ex-t" value="${pad(n.getHours())}:${pad(n.getMinutes())}">
+    <div class="form-label">Type</div>
+    <select id="ex-tp"><option value="MR">MR</option><option value="IR">IR</option></select>
+    <div class="form-label">Dosis (mg)</div>
+    <input type="number" id="ex-mg" value="10" min="5" max="60">
+    <div class="form-label">Opmerking</div>
+    <input type="text" id="ex-nt" placeholder="Reden extra dosis...">
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="confirmExtra()">Toevoegen</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Annuleer</button>
+    </div>`);
+}
+function confirmExtra(){
+  const t=document.getElementById('ex-t').value;
+  if(!t){toast('Tijdstip verplicht');return;}
+  const log=dayLog();
+  log.doses.push({time:t,type:document.getElementById('ex-tp').value,mg:+document.getElementById('ex-mg').value,taken:null,score:0,note:document.getElementById('ex-nt').value,extra:true});
+  log.doses.sort((a,b)=>t2m(a.time)-t2m(b.time));
+  save(); closeModal(); renderToday();
+}
+
+/* ════════════════════════════════════════════════════════
+   SCHEMA
+════════════════════════════════════════════════════════ */
+let slots=[];
+
+function renderSchema(){
+  const today=todayStr();
+  let html='<div class="sec-label">Titratiefasen</div>';
+  if(S.phases.length===0) html+=`<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Nog geen fasen.</div></div>`;
+
+  S.phases.forEach((ph,pi)=>{
+    const st=ph.start>today?'fut':(ph.end&&ph.end<today?'off':'on');
+    const stLabel={on:'Actief',fut:'Gepland',off:'Afgelopen'}[st];
+    const COLS=['#c8ff00','#00e5ff','#ff7a00','#ff2d6b'];
+    const doseRows=(ph.doses||[]).map((d,di)=>{
+      const w=calcW(d.time,d.type);
+      return `<div class="pd-row">
+        <div class="pd-time" style="color:${COLS[di%4]}">${d.time}</div>
+        <span class="tag tag-${d.type.toLowerCase()}">${d.type} ${d.mg}mg</span>
+        <div class="pd-window">Effect ${m2t(w.start)}–${m2t(w.end)}</div>
+        <button class="btn-icon" onclick="event.stopPropagation();openEditDose(${pi},${di})">✎</button>
+        <button class="btn-icon" onclick="event.stopPropagation();delDose(${pi},${di})">✕</button>
+      </div>`;
+    }).join('');
+
+    html+=`<div class="phase-card" id="pc-${pi}">
+      <div class="pc-header" onclick="toggleEl('pc-${pi}')">
+        <div class="pc-name">${esc(ph.name)}</div>
+        <span class="tag tag-${st}">${stLabel}</span>
+        <div class="pc-dates">${ph.start}${ph.end?' → '+ph.end:''}</div>
+        <button class="btn-icon" onclick="event.stopPropagation();openEditPhase(${pi})">✎</button>
+        <button class="btn-icon" onclick="event.stopPropagation();delPhase(${pi})">✕</button>
+        <span class="chev">▼</span>
+      </div>
+      <div class="pc-body">
+        ${ph.notes?`<p style="font-size:12px;color:var(--txt2);margin:12px 0 8px;line-height:1.6">📝 ${esc(ph.notes)}</p>`:''}
+        ${doseRows}
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn btn-ghost btn-sm" onclick="openAddDose(${pi})">+ Dosis</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html+=`<div style="margin-top:16px"><button class="btn btn-lime" onclick="openAddPhase()">+ Nieuwe fase</button></div>`;
+  document.getElementById('pg-schema').innerHTML=html;
+}
+
+function phaseFormHTML(ph){
+  return `
+    <div class="form-label">Naam</div>
+    <input type="text" id="ph-n" value="${esc(ph?.name||'')}">
+    <div class="form-row">
+      <div><div class="form-label">Start</div><input type="date" id="ph-s" value="${ph?.start||''}"></div>
+      <div><div class="form-label">Einde (opt.)</div><input type="date" id="ph-e" value="${ph?.end||''}"></div>
+    </div>
+    <div class="form-label">Notities neuroloog</div>
+    <textarea id="ph-nt">${esc(ph?.notes||'')}</textarea>
+    <div class="sec-label" style="margin-top:14px">Dosissen</div>
+    <div id="slot-wrap">${slots.map(slotHTML).join('')}</div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="addSlot()">+ Dosis</button>`;
+}
+
+function slotHTML(d,i){
+  return `<div class="dslot" id="sl-${i}">
+    <div class="dslot-hd">Dosis ${i+1} <button class="btn-icon" onclick="rmSlot(${i})" style="font-size:11px;padding:3px 7px">✕</button></div>
+    <div class="form-row">
+      <div><div class="form-label">Tijdstip</div><input type="time" value="${d.time||''}" onchange="slots[${i}].time=this.value"></div>
+      <div><div class="form-label">Type</div>
+        <select onchange="slots[${i}].type=this.value">
+          <option value="MR" ${(d.type||'MR')==='MR'?'selected':''}>MR</option>
+          <option value="IR" ${d.type==='IR'?'selected':''}>IR</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-label">mg</div>
+    <input type="number" value="${d.mg||18}" min="5" max="80" onchange="slots[${i}].mg=+this.value">
+  </div>`;
+}
+
+function addSlot(){ slots.push({time:'',type:'MR',mg:18}); document.getElementById('slot-wrap').innerHTML=slots.map(slotHTML).join(''); }
+function rmSlot(i){ slots.splice(i,1); document.getElementById('slot-wrap').innerHTML=slots.map(slotHTML).join(''); }
+
+function syncSlots(){
+  slots.forEach((d,i)=>{
+    const te=document.querySelector(`#sl-${i} input[type=time]`);
+    const me=document.querySelector(`#sl-${i} input[type=number]`);
+    const se=document.querySelector(`#sl-${i} select`);
+    if(te)d.time=te.value; if(me)d.mg=+me.value; if(se)d.type=se.value;
+  });
+}
+
+function openAddPhase(){ slots=[]; openModal(`<div class="modal-handle"></div><div class="modal-title">Nieuwe fase</div>${phaseFormHTML(null)}<div class="btn-row"><button class="btn btn-lime" onclick="savePhase(null)">Aanmaken</button><button class="btn btn-ghost" onclick="closeModal()">Annuleer</button></div>`); }
+function openEditPhase(pi){ slots=JSON.parse(JSON.stringify(S.phases[pi].doses||[])); openModal(`<div class="modal-handle"></div><div class="modal-title">Fase bewerken</div>${phaseFormHTML(S.phases[pi])}<div class="btn-row"><button class="btn btn-lime" onclick="savePhase(${pi})">Opslaan</button><button class="btn btn-ghost" onclick="closeModal()">Annuleer</button></div>`); }
+
+function savePhase(pi){
+  syncSlots();
+  const name=document.getElementById('ph-n').value.trim();
+  const start=document.getElementById('ph-s').value;
+  if(!name||!start){toast('Naam en startdatum verplicht');return;}
+  if(slots.some(d=>!d.time)){toast('Geef elk dosis een tijdstip');return;}
+  const ph={id:pi!==null?S.phases[pi].id:uid(),name,start,end:document.getElementById('ph-e').value,notes:document.getElementById('ph-nt').value.trim(),doses:JSON.parse(JSON.stringify(slots))};
+  if(pi!==null){ S.phases[pi]=ph; } else { S.phases.push(ph); S.phases.sort((a,b)=>a.start.localeCompare(b.start)); }
+  save(); closeModal(); renderSchema();
+}
+
+function delPhase(pi){ if(!confirm('Fase verwijderen?'))return; S.phases.splice(pi,1); save(); renderSchema(); }
+
+function openAddDose(pi){
+  openModal(`<div class="modal-handle"></div><div class="modal-title">Dosis toevoegen</div>
+    <div class="form-label">Tijdstip</div><input type="time" id="nd-t">
+    <div class="form-label">Type</div><select id="nd-tp"><option value="MR">MR</option><option value="IR">IR</option></select>
+    <div class="form-label">mg</div><input type="number" id="nd-mg" value="18" min="5" max="80">
+    <div class="btn-row"><button class="btn btn-lime" onclick="confirmAddDose(${pi})">Toevoegen</button><button class="btn btn-ghost" onclick="closeModal()">Annuleer</button></div>`);
+}
+function confirmAddDose(pi){
+  const t=document.getElementById('nd-t').value;
+  if(!t){toast('Tijdstip verplicht');return;}
+  S.phases[pi].doses=S.phases[pi].doses||[];
+  S.phases[pi].doses.push({time:t,type:document.getElementById('nd-tp').value,mg:+document.getElementById('nd-mg').value});
+  S.phases[pi].doses.sort((a,b)=>t2m(a.time)-t2m(b.time));
+  save(); closeModal(); renderSchema();
+}
+
+function openEditDose(pi,di){
+  const d=S.phases[pi].doses[di];
+  openModal(`<div class="modal-handle"></div><div class="modal-title">Dosis bewerken</div>
+    <div class="form-label">Tijdstip</div><input type="time" id="ed-t" value="${d.time}">
+    <div class="form-label">Type</div><select id="ed-tp"><option value="MR" ${d.type==='MR'?'selected':''}>MR</option><option value="IR" ${d.type==='IR'?'selected':''}>IR</option></select>
+    <div class="form-label">mg</div><input type="number" id="ed-mg" value="${d.mg}" min="5" max="80">
+    <div class="btn-row"><button class="btn btn-lime" onclick="confirmEditDose(${pi},${di})">Opslaan</button><button class="btn btn-ghost" onclick="closeModal()">Annuleer</button></div>`);
+}
+function confirmEditDose(pi,di){
+  const t=document.getElementById('ed-t').value;
+  if(!t){toast('Tijdstip verplicht');return;}
+  S.phases[pi].doses[di]={time:t,type:document.getElementById('ed-tp').value,mg:+document.getElementById('ed-mg').value};
+  S.phases[pi].doses.sort((a,b)=>t2m(a.time)-t2m(b.time));
+  save(); closeModal(); renderSchema();
+}
+function delDose(pi,di){ if(!confirm('Dosis verwijderen?'))return; S.phases[pi].doses.splice(di,1); save(); renderSchema(); }
+
+/* ════════════════════════════════════════════════════════
+   HISTORY
+════════════════════════════════════════════════════════ */
+function renderHistory(){
+  const el=document.getElementById('pg-history');
+  const SE=['','😞','😐','🙂','😊','🤩'];
+  const entries=Object.entries(S.logs).filter(([,l])=>l.doses?.length>0||l.dayNote||l.reflection).sort((a,b)=>b[0].localeCompare(a[0]));
+
+  if(entries.length===0){ el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Nog geen historiek.</div></div>`; return; }
+
+  let html='<div class="sec-label">Dagboek</div>';
+  entries.forEach(([date,log])=>{
+    const snap=log.snap||S.settings;
+    const doses=log.doses||[];
+    const summary=doses.map(d=>`${d.time} ${d.taken===true?'✓':d.taken===false?'✗':'–'}${d.score?SE[d.score]:''}`).join(' · ');
+
+    const rows=doses.map((d,i)=>{
+      const w=calcW(d.time,d.type,snap);
+      return `<div class="he-row">
+        <div class="he-time">${d.time}</div>
+        <div class="he-detail">
+          <span class="tag tag-${d.type.toLowerCase()}" style="margin-right:5px">${d.type} ${d.mg}mg</span>
+          ${d.taken===true?'<span style="color:var(--lime)">✓ genomen</span>':d.taken===false?'<span style="color:var(--pink)">✗ niet genomen</span>':'<span style="color:var(--txt3)">– onbekend</span>'}
+          ${d.score?` &nbsp; ${SE[d.score]}`:''}
+          ${d.note?`<br>💬 ${esc(d.note)}`:''}
+          <br>Effect: ${m2t(w.start)}–${m2t(w.end)}
+          ${d.extra?'&nbsp;<span class="tag" style="background:var(--oranged);color:var(--orange);border:1px solid rgba(255,122,0,.2)">extra</span>':''}
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          <button class="btn-icon" onclick="openEditHist('${date}',${i})">✎</button>
+          <button class="btn-icon" onclick="delHist('${date}',${i})">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    const noteBlock=(log.dayNote||log.reflection)?`<div class="day-note-block">
+      ${log.dayNote?`<div><strong>Notitie</strong><br>${esc(log.dayNote)}</div>`:''}
+      ${log.reflection?`<div style="margin-top:${log.dayNote?'8px':'0'}"><strong>Reflectie</strong><br>${esc(log.reflection)}</div>`:''}
+    </div>`:'';
+
+    html+=`<div class="hist-day" id="hd-${date}">
+      <div class="hd-header" onclick="toggleEl('hd-${date}')">
+        <div class="hd-date">${dutchShort(date)}</div>
+        <div class="hd-summary">${summary||'geen dosissen'}</div>
+        <span class="chev">▼</span>
+      </div>
+      <div class="hd-body">${rows}${noteBlock}</div>
+    </div>`;
+  });
+
+  el.innerHTML=html;
+}
+
+function openEditHist(date,i){
+  const d=S.logs[date].doses[i];
+  const SE=['😞','😐','🙂','😊','🤩'];
+  openModal(`<div class="modal-handle"></div><div class="modal-title">Entry bewerken</div>
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:14px">${dutchFull(date)} — Dosis ${i+1}</div>
+    <div class="form-label">Tijdstip</div><input type="time" id="eh-t" value="${d.time}">
+    <div class="form-label">Type</div><select id="eh-tp"><option value="MR" ${d.type==='MR'?'selected':''}>MR</option><option value="IR" ${d.type==='IR'?'selected':''}>IR</option></select>
+    <div class="form-label">mg</div><input type="number" id="eh-mg" value="${d.mg}" min="5" max="80">
+    <div class="form-label">Genomen?</div>
+    <select id="eh-tk">
+      <option value="null" ${d.taken===null?'selected':''}>Onbekend</option>
+      <option value="true" ${d.taken===true?'selected':''}>Ja</option>
+      <option value="false" ${d.taken===false?'selected':''}>Nee</option>
+    </select>
+    <div class="form-label">Gevoel</div>
+    <select id="eh-sc">
+      <option value="0" ${!d.score?'selected':''}>–</option>
+      ${SE.map((e,n)=>`<option value="${n+1}" ${d.score===n+1?'selected':''}>${e} (${n+1})</option>`).join('')}
+    </select>
+    <div class="form-label">Opmerking</div>
+    <input type="text" id="eh-nt" value="${esc(d.note||'')}">
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="confirmEditHist('${date}',${i})">Opslaan</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Annuleer</button>
+    </div>`);
+}
+function confirmEditHist(date,i){
+  const d=S.logs[date].doses[i];
+  d.time=document.getElementById('eh-t').value;
+  d.type=document.getElementById('eh-tp').value;
+  d.mg=+document.getElementById('eh-mg').value;
+  const tv=document.getElementById('eh-tk').value;
+  d.taken=tv==='null'?null:tv==='true';
+  d.score=+document.getElementById('eh-sc').value;
+  d.note=document.getElementById('eh-nt').value;
+  save(); closeModal(); renderHistory();
+}
+function delHist(date,i){
+  if(!confirm('Entry verwijderen?'))return;
+  S.logs[date].doses.splice(i,1);
+  if(!S.logs[date].doses.length&&!S.logs[date].dayNote&&!S.logs[date].reflection) delete S.logs[date];
+  save(); renderHistory();
+}
+
+/* ════════════════════════════════════════════════════════
+   SETTINGS
+════════════════════════════════════════════════════════ */
+function renderSettings(){
+  document.getElementById('pg-settings').innerHTML=`
+    <div class="page-title">Instellingen</div>
+    <div class="page-sub">Werkingstijden op basis van jouw profiel</div>
+
+    <div class="info-box">
+      ℹ Wijzigingen gelden voor vandaag en de toekomst. Reeds gelogde dagen behouden hun eigen snapshot.
+    </div>
+
+    <div class="sblock">
+      <div class="sblock-title" style="color:var(--cyan)">Rilatine MR</div>
+      <div class="sgrid">
+        <div class="sfield"><label>Aanlooptijd</label><div class="iu"><input type="number" id="mr-on" value="${S.settings.mr.onset}" min="15" max="120" step="5"><span>min</span></div></div>
+        <div class="sfield"><label>Werkzame duur</label><div class="iu"><input type="number" id="mr-du" value="${S.settings.mr.duration}" min="2" max="12" step="0.5"><span>uur</span></div></div>
+      </div>
+    </div>
+
+    <div class="sblock">
+      <div class="sblock-title" style="color:var(--orange)">Rilatine IR</div>
+      <div class="sgrid">
+        <div class="sfield"><label>Aanlooptijd</label><div class="iu"><input type="number" id="ir-on" value="${S.settings.ir.onset}" min="10" max="60" step="5"><span>min</span></div></div>
+        <div class="sfield"><label>Werkzame duur</label><div class="iu"><input type="number" id="ir-du" value="${S.settings.ir.duration}" min="1" max="6" step="0.5"><span>uur</span></div></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="saveSettings()">Opslaan</button>
+      <button class="btn btn-ghost" onclick="resetSettings()">Standaard</button>
+    </div>
+
+    <div class="sec-label" style="margin-top:24px">Data</div>
+    <div class="sblock">
+      <div class="sblock-title">Export / import</div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="btn btn-ghost btn-sm" onclick="exportData()">↓ Export JSON</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('imp-file').click()">↑ Import JSON</button>
+        <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importData(this)">
+      </div>
+    </div>
+  `;
+}
+
+function saveSettings(){
+  S.settings.mr.onset=+document.getElementById('mr-on').value;
+  S.settings.mr.duration=+document.getElementById('mr-du').value;
+  S.settings.ir.onset=+document.getElementById('ir-on').value;
+  S.settings.ir.duration=+document.getElementById('ir-du').value;
+  const t=todayStr();
+  if(S.logs[t]) S.logs[t].snap=JSON.parse(JSON.stringify(S.settings));
+  save(); toast('✓ Opgeslagen');
+}
+
+function resetSettings(){
+  S.settings={mr:{...DEFS.mr},ir:{...DEFS.ir}};
+  save(); renderSettings(); toast('↩ Standaard hersteld');
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`pillr-backup-${todayStr()}.json`; a.click();
+}
+
+function importData(input){
+  const file=input.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(!d.settings||!d.phases) throw new Error('Ongeldig formaat');
+      S=d; save(); go('today'); toast('✓ Data geïmporteerd');
+    }catch(err){ toast('✗ Ongeldige data'); }
+  };
+  r.readAsText(file);
+}
+
+/* ════════════════════════════════════════════════════════
+   MODAL
+════════════════════════════════════════════════════════ */
+function openModal(html){
+  document.getElementById('modal-box').innerHTML=html;
+  document.getElementById('modal-wrap').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal-wrap').classList.remove('show'); }
+function modalBg(e){ if(e.target===document.getElementById('modal-wrap')) closeModal(); }
+
+/* ════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════ */
+let _tt;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(_tt);
+  _tt=setTimeout(()=>el.style.transform='translateX(-50%) translateY(80px)',2200);
+}
+
+/* ════════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════════ */
+load();
+renderToday();
+setInterval(()=>{ if(curTab==='today') renderToday(); }, 60000);
+
+// Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
