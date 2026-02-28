@@ -424,6 +424,27 @@ select option { background: var(--white); }
 .hd-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--brd); }
 .hist-day.open .hd-body { display: block; }
 
+/* History navigation */
+.hist-nav {
+  background: var(--white); border: 1px solid var(--brd); border-radius: var(--r);
+  box-shadow: var(--shadow); padding: 14px 16px; margin-bottom: 16px;
+}
+.hist-view-btns { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.hist-period-nav {
+  display: flex; align-items: center; gap: 10px;
+}
+.hist-period-label {
+  flex: 1; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px;
+  text-align: center;
+}
+.hist-arrow {
+  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--s1); border: 1px solid var(--brd2);
+  font-size: 12px; cursor: pointer; flex-shrink: 0; transition: background .15s;
+}
+.hist-arrow:active { background: var(--s2); }
+.hist-arrow:disabled { opacity: .35; cursor: default; }
+
 .he-row {
   display: flex; align-items: flex-start; padding: 10px 0; gap: 10px;
   border-bottom: 1px solid var(--brd); flex-wrap: wrap;
@@ -684,7 +705,18 @@ function calcW(time, type, snap){
 }
 
 function activePhase(ds){
-  return S.phases.find(p=>p.start<=ds&&(!p.end||p.end>=ds))||null;
+  // Find all phases that cover ds
+  const covering = S.phases.filter(p => p.start <= ds && (!p.end || p.end >= ds));
+  if(!covering.length) return null;
+  // Prefer the most recently started phase (latest start date)
+  // If tie: prefer the one with an end date (more specific) over open-ended
+  covering.sort((a,b)=>{
+    if(b.start !== a.start) return b.start.localeCompare(a.start);
+    if(a.end && !b.end) return -1;
+    if(!a.end && b.end) return 1;
+    return 0;
+  });
+  return covering[0];
 }
 
 /* ── Get or init day log ────────────────────────── */
@@ -706,7 +738,14 @@ function initBlankLog(ds){
 function initFromTemplate(ds, phaseId){
   ds=ds||todayStr();
   const ph=S.phases.find(p=>p.id===phaseId)||activePhase(ds);
-  S.logs[ds]={ snap:JSON.parse(JSON.stringify(S.settings)), fromTemplate:true, doses: ph&&ph.doses ? ph.doses.map(d=>({...d,taken:null,score:0,note:'',extra:false})) : [], dayNote: S.logs[ds]?.dayNote||'', reflection: S.logs[ds]?.reflection||'' };
+  // taken defaults to false (not taken yet) — user marks it true when taken
+  S.logs[ds]={
+    snap: JSON.parse(JSON.stringify(S.settings)),
+    fromTemplate: true,
+    doses: ph&&ph.doses ? ph.doses.map(d=>({...d, taken:false, score:0, note:'', extra:false})) : [],
+    dayNote: S.logs[ds]?.dayNote||'',
+    reflection: S.logs[ds]?.reflection||''
+  };
   persist();
   return S.logs[ds];
 }
@@ -725,7 +764,7 @@ function reinitDay(ds){
     snap: JSON.parse(JSON.stringify(S.settings)),
     fromTemplate: !!ph,
     doses: ph&&ph.doses
-      ? ph.doses.map(d=>({...d, taken:null, score:0, note:'', extra:false}))
+      ? ph.doses.map(d=>({...d, taken:false, score:0, note:'', extra:false}))
       : [],
     dayNote: S.logs[ds]?.dayNote||'',
     reflection: S.logs[ds]?.reflection||''
@@ -792,7 +831,18 @@ function go(id){
 const COLS=['#00e000','#00b8d9','#ff6b00','#ff2060','#7c3aed'];
 const SE=['😞','😐','🙂','😊','🤩'];
 
-function renderToday(){ renderDayPage(todayStr(), 'pg-today'); }
+function renderToday(){
+  const ds=todayStr();
+  // Auto-apply active phase template if no log exists yet
+  if(!S.logs[ds]){
+    const ph=activePhase(ds);
+    if(ph && ph.doses && ph.doses.length>0){
+      initFromTemplate(ds, ph.id);
+    }
+    // If no phase: leave null, renderDayPage handles the empty state
+  }
+  renderDayPage(ds, 'pg-today');
+}
 
 function renderDayPage(ds, containerId){
   const isToday = ds===todayStr();
@@ -818,34 +868,33 @@ function renderDayPage(ds, containerId){
     <div class="page-sub">${dateStr}${ph?` · <em>${esc(ph.name)}</em>`:''}</div>
     ${ow?`<div class="alert-warn">${ow}</div>`:''}`;
 
-  // ── ACTION BAR: sjabloon / manueel knoppen ──────
+  // ── ACTION BAR — altijd zichtbaar ──────────────
   const templateBtns = S.phases.length>0
     ? `<button class="btn btn-lime btn-sm" onclick="openChooseTemplate('${ds}','${containerId}')">📋 Sjabloon toepassen</button>`
     : '';
-  const manualBtn = `<button class="btn btn-ghost btn-sm" onclick="startManual('${ds}','${containerId}')">✏️ Manueel starten</button>`;
+  const addDoseBtn  = `<button class="btn btn-ghost btn-sm" onclick="openAddDoseForDay('${ds}','${containerId}')">✚ Dosis toevoegen</button>`;
+  const clearBtn    = log ? `<button class="btn btn-ghost btn-sm" onclick="clearDay('${ds}','${containerId}')">🗑 Wissen</button>` : '';
 
-  if(!log || doses.length===0){
-    // No log yet or empty — show choice
-    html+=`
-      <div class="card card-pad" style="text-align:center;padding:28px 18px">
-        <div style="font-size:28px;margin-bottom:10px">💊</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px">Dag starten</div>
-        <div style="font-size:12px;color:var(--txt2);margin-bottom:18px;line-height:1.6">
-          ${ph?`Actief sjabloon: <strong>${esc(ph.name)}</strong>.<br>Pas het toe of start manueel.`:'Geen actief sjabloon voor deze dag. Kies een sjabloon of start manueel.'}
-        </div>
-        <div class="btn-row" style="justify-content:center">
-          ${templateBtns}
-          ${manualBtn}
-        </div>
-      </div>`;
-  } else {
-    // Has doses — show action bar at top for flexibility
-    html+=`<div class="btn-row" style="margin-bottom:12px">
-      ${templateBtns}
-      ${manualBtn}
-      <button class="btn btn-ghost btn-sm" onclick="clearDay('${ds}','${containerId}')">🗑 Dag wissen</button>
+  html+=`<div class="btn-row" style="margin-bottom:14px">
+    ${templateBtns}
+    ${addDoseBtn}
+    ${clearBtn}
+  </div>`;
+
+  if(doses.length===0){
+    // Empty state — informative, but action bar above already gives all options
+    html+=`<div class="card card-pad" style="text-align:center;padding:22px 18px;color:var(--txt2)">
+      <div style="font-size:26px;margin-bottom:8px">💊</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:6px;color:var(--txt)">
+        ${ph ? `Sjabloon "${esc(ph.name)}" actief` : 'Geen actief sjabloon'}
+      </div>
+      <div style="font-size:12px;line-height:1.6">
+        ${ph
+          ? `Gebruik <strong>📋 Sjabloon toepassen</strong> om het schema van vandaag voor te vullen,<br>of voeg dosissen manueel toe via <strong>✚ Dosis toevoegen</strong>.`
+          : `Voeg dosissen toe via <strong>✚ Dosis toevoegen</strong> of maak een schema aan via de <strong>Schema</strong>-tab.`}
+      </div>
     </div>`;
-
+  } else {
     // INTAKE OVERVIEW
     const rows=doses.map((d,i)=>{
       const col=COLS[i%COLS.length];
@@ -1193,24 +1242,42 @@ function openEditPhase(pi){
 
 function savePhase(){
   syncSlots();
-  const name=document.getElementById('ph-n').value.trim();
-  const start=document.getElementById('ph-s').value;
-  if(!name||!start){toast('Naam en startdatum verplicht');return;}
-  if(slots.some(d=>!d.time)){toast('Geef elk dosis een tijdstip');return;}
+  const name  = document.getElementById('ph-n').value.trim();
+  const start = document.getElementById('ph-s').value;
+  const end   = document.getElementById('ph-e').value;
+  const notes = document.getElementById('ph-nt').value.trim();
 
-  const pi=_editingPhaseIdx;
-  const oldPh=pi!==null?S.phases[pi]:null;
-  const ph={
-    id: oldPh?oldPh.id:uid(), name, start,
-    end: document.getElementById('ph-e').value,
-    notes: document.getElementById('ph-nt').value.trim(),
+  // ── Validatie ──────────────────────────────────
+  if(!name)  { toast('⚠ Geef het sjabloon een naam'); return; }
+  if(!start) { toast('⚠ Startdatum is verplicht'); return; }
+  if(end && end < start) { toast('⚠ Einddatum moet na de startdatum liggen'); return; }
+  if(slots.some(d=>!d.time)) { toast('⚠ Geef elk dosis een tijdstip'); return; }
+
+  // Check for overlapping phases (excluding the one being edited)
+  const pi = _editingPhaseIdx;
+  const overlap = S.phases.find((p,i)=>{
+    if(pi !== null && i === pi) return false; // skip self
+    // Two phases overlap if: A.start <= B.end AND B.start <= A.end
+    const pEnd   = p.end   || '9999-12-31';
+    const newEnd = end     || '9999-12-31';
+    return p.start <= newEnd && start <= pEnd;
+  });
+  if(overlap){
+    const ok = confirm(`⚠ Dit sjabloon overlapt met "${overlap.name}" (${overlap.start}${overlap.end?' → '+overlap.end:''}). Toch opslaan?`);
+    if(!ok) return;
+  }
+
+  const oldPh = pi !== null ? S.phases[pi] : null;
+  const ph = {
+    id: oldPh ? oldPh.id : uid(),
+    name, start, end, notes,
     doses: JSON.parse(JSON.stringify(slots))
   };
 
-  if(pi!==null){ S.phases[pi]=ph; } else { S.phases.push(ph); S.phases.sort((a,b)=>a.start.localeCompare(b.start)); }
-  persist(); closeModal(); renderSchema();
+  if(pi !== null){ S.phases[pi] = ph; }
+  else { S.phases.push(ph); S.phases.sort((a,b)=>a.start.localeCompare(b.start)); }
 
-  // ask about affected logged days
+  persist(); closeModal(); renderSchema();
   setTimeout(()=>askReinitAffectedDays(ph.id, oldPh?.start||ph.start, oldPh?.end, ph.start, ph.end), 200);
 }
 
@@ -1265,68 +1332,154 @@ function delDose(pi,di){
 /* ═══════════════════════════════════════════════════
    HISTORY
 ═══════════════════════════════════════════════════ */
-function renderHistory(){
-  const el=document.getElementById('pg-history');
-  const today=todayStr();
-  const dateSet=new Set(Object.keys(S.logs));
-  for(let i=0;i<14;i++){
-    const d=new Date(); d.setDate(d.getDate()-i);
-    dateSet.add(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()));
+let _histView = 'week';   // 'day' | 'week' | 'month'
+let _histAnchor = null;   // reference date string (start of current window)
+
+function histAnchorDefault(){
+  // Start of current week (Monday)
+  const d = new Date(); d.setHours(12,0,0,0);
+  const dow = d.getDay(); // 0=sun
+  d.setDate(d.getDate() - (dow===0?6:dow-1));
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+
+function histWindowDates(anchor, view){
+  // Returns {start, end, label} for the current window
+  const a = new Date(anchor+'T12:00:00');
+  let start, end, label;
+  if(view==='day'){
+    start = anchor;
+    end   = anchor;
+    label = dutchFull(anchor);
+  } else if(view==='week'){
+    start = anchor;
+    const e = new Date(a); e.setDate(e.getDate()+6);
+    end   = e.getFullYear()+'-'+pad(e.getMonth()+1)+'-'+pad(e.getDate());
+    label = `${dutchShort(start)} – ${dutchShort(end)}`;
+  } else { // month
+    start = anchor.slice(0,7)+'-01';
+    const lastDay = new Date(a.getFullYear(), a.getMonth()+1, 0);
+    end   = lastDay.getFullYear()+'-'+pad(lastDay.getMonth()+1)+'-'+pad(lastDay.getDate());
+    label = new Date(anchor+'T12:00:00').toLocaleDateString('nl-BE',{month:'long',year:'numeric'});
   }
-  const dates=[...dateSet].sort((a,b)=>b.localeCompare(a));
+  return {start, end, label};
+}
+
+function histNavigate(dir){
+  // dir = -1 (prev) or +1 (next)
+  const anchor = _histAnchor || histAnchorDefault();
+  const a = new Date(anchor+'T12:00:00');
+  if(_histView==='day'){
+    a.setDate(a.getDate()+dir);
+  } else if(_histView==='week'){
+    a.setDate(a.getDate()+dir*7);
+  } else {
+    a.setMonth(a.getMonth()+dir);
+    a.setDate(1);
+  }
+  _histAnchor = a.getFullYear()+'-'+pad(a.getMonth()+1)+'-'+pad(a.getDate());
+  renderHistory();
+}
+
+function histSetView(v){
+  _histView = v;
+  // Re-anchor to sensible start for the view
+  const today = todayStr();
+  const t = new Date(today+'T12:00:00');
+  if(v==='day'){
+    _histAnchor = today;
+  } else if(v==='week'){
+    const dow = t.getDay();
+    t.setDate(t.getDate()-(dow===0?6:dow-1));
+    _histAnchor = t.getFullYear()+'-'+pad(t.getMonth()+1)+'-'+pad(t.getDate());
+  } else {
+    _histAnchor = today.slice(0,7)+'-01';
+  }
+  renderHistory();
+}
+
+function renderHistory(){
+  const el = document.getElementById('pg-history');
+  if(!_histAnchor) _histAnchor = histAnchorDefault();
+
+  const {start, end, label} = histWindowDates(_histAnchor, _histView);
+  const today = todayStr();
+
+  // Only show days that have actual log data within the window
+  const allLoggedDates = Object.keys(S.logs)
+    .filter(d => d >= start && d <= end && (
+      S.logs[d].doses?.length > 0 || S.logs[d].dayNote || S.logs[d].reflection
+    ))
+    .sort((a,b)=>b.localeCompare(a));
+
   const SE2=['','😞','😐','🙂','😊','🤩'];
+  const viewBtns = ['day','week','month'].map(v=>
+    `<button class="chart-toggle${_histView===v?' on':''}" onclick="histSetView('${v}')">${{day:'Dag',week:'Week',month:'Maand'}[v]}</button>`
+  ).join('');
 
-  let html=`<div class="btn-row" style="margin-bottom:4px">
-    <button class="btn btn-lime btn-sm" onclick="openRegisterPastDay()">📅 Dag registreren</button>
-  </div><div class="sec-label">Dagboek</div>`;
-
-  dates.forEach(date=>{
-    const log=S.logs[date]||null;
-    const doses=log?.doses||[];
-    const hasData=doses.length>0||log?.dayNote||log?.reflection;
-    const isToday=date===today;
-    const summary=doses.length>0
-      ? doses.map(d=>`${d.time} ${d.taken===true?'✓':d.taken===false?'✗':'–'}${d.score?SE2[d.score]:''}`).join(' · ')
-      : (log?.dayNote?'📝 notitie':'leeg');
-
-    const rows=doses.map((d,i)=>{
-      const snap=log?.snap||S.settings;
-      const w=calcW(d.time,d.type,snap);
-      return `<div class="he-row">
-        <div class="he-time">${d.time}</div>
-        <div class="he-detail">
-          <span class="tag tag-${d.type.toLowerCase()}" style="margin-right:5px">${d.type} ${d.mg}mg</span>
-          ${d.taken===true?'<span style="color:var(--lime2)">✓</span>':d.taken===false?'<span style="color:var(--pink)">✗</span>':'<span style="color:var(--txt3)">–</span>'}
-          ${d.score?` ${SE2[d.score]}`:''}
-          ${d.note?`<br>💬 ${esc(d.note)}`:''}
-          ${d.extra?'<br><span class="tag tag-extra">extra</span>':''}
-          <br><span style="font-size:11px;color:var(--txt3)">Effect: ${m2t(w.start)}–${m2t(w.end)}</span>
-        </div>
-        <button class="btn-icon" onclick="openEditHistEntry('${date}',${i})">✎</button>
-        <button class="btn-icon" onclick="delHistEntry('${date}',${i})">✕</button>
-      </div>`;
-    }).join('');
-
-    const notes=(log?.dayNote||log?.reflection)?`
-      ${log.dayNote?`<div class="day-notes-block"><div class="dnb-label">Dagnotitie</div>${esc(log.dayNote)}</div>`:''}
-      ${log.reflection?`<div class="day-notes-block"><div class="dnb-label">Reflectie</div>${esc(log.reflection)}</div>`:''}`:'' ;
-
-    html+=`<div class="hist-day" id="hd-${date}">
-      <div class="hd-header" onclick="toggleEl('hd-${date}')">
-        <div class="hd-date" ${isToday?'style="color:var(--lime2)"':''}>${isToday?'● ':''} ${dutchShort(date)}</div>
-        <div class="hd-summary">${summary}</div>
-        <button class="btn btn-ghost btn-sm" style="flex-shrink:0;padding:5px 10px;font-size:10px" onclick="event.stopPropagation();openDayModal('${date}')">✎ Bewerk</button>
-        <span class="chev">▼</span>
+  let html=`
+    <div class="hist-nav">
+      <div class="hist-view-btns">${viewBtns}</div>
+      <div class="hist-period-nav">
+        <button class="btn-icon hist-arrow" onclick="histNavigate(-1)">◀</button>
+        <div class="hist-period-label">${label}</div>
+        <button class="btn-icon hist-arrow" onclick="histNavigate(1)" ${end>=today?'disabled':''}>▶</button>
       </div>
-      <div class="hd-body">
-        ${rows}${notes}
-        ${!hasData?`<div style="padding:10px 0;font-size:12px;color:var(--txt3)">Nog niets geregistreerd.</div>`:''}
-        <div class="btn-row" style="margin-top:8px">
-          <button class="btn btn-ghost btn-sm" onclick="openDayModal('${date}')">✎ Volledige dagregistratie</button>
-        </div>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn btn-lime btn-sm" onclick="openRegisterPastDay()">📅 Dag registreren</button>
       </div>
     </div>`;
-  });
+
+  if(allLoggedDates.length===0){
+    html+=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Geen geregistreerde dagen in deze periode.</div></div>`;
+  } else {
+    html+=`<div class="sec-label">${allLoggedDates.length} dag${allLoggedDates.length!==1?'en':''}</div>`;
+    allLoggedDates.forEach(date=>{
+      const log = S.logs[date];
+      const doses = log?.doses||[];
+      const isToday = date===today;
+      const summary = doses.length>0
+        ? doses.map(d=>`${d.time} ${d.taken===true?'✓':d.taken===false?'✗':'–'}${d.score?SE2[d.score]:''}`).join(' · ')
+        : (log?.dayNote?'📝 notitie':'');
+
+      const rows = doses.map((d,i)=>{
+        const snap=log?.snap||S.settings;
+        const w=calcW(d.time,d.type,snap);
+        return `<div class="he-row">
+          <div class="he-time">${d.time}</div>
+          <div class="he-detail">
+            <span class="tag tag-${d.type.toLowerCase()}" style="margin-right:5px">${d.type} ${d.mg}mg</span>
+            ${d.taken===true?'<span style="color:var(--lime2)">✓</span>':d.taken===false?'<span style="color:var(--pink)">✗</span>':'<span style="color:var(--txt3)">–</span>'}
+            ${d.score?` ${SE2[d.score]}`:''}
+            ${d.note?`<br>💬 ${esc(d.note)}`:''}
+            ${d.extra?'<br><span class="tag tag-extra">extra</span>':''}
+            <br><span style="font-size:11px;color:var(--txt3)">Effect: ${m2t(w.start)}–${m2t(w.end)}</span>
+          </div>
+          <button class="btn-icon" onclick="openEditHistEntry('${date}',${i})">✎</button>
+          <button class="btn-icon" onclick="delHistEntry('${date}',${i})">✕</button>
+        </div>`;
+      }).join('');
+
+      const notes=(log?.dayNote||log?.reflection)?`
+        ${log.dayNote?`<div class="day-notes-block"><div class="dnb-label">Dagnotitie</div>${esc(log.dayNote)}</div>`:''}
+        ${log.reflection?`<div class="day-notes-block"><div class="dnb-label">Reflectie</div>${esc(log.reflection)}</div>`:''}`:'' ;
+
+      html+=`<div class="hist-day" id="hd-${date}">
+        <div class="hd-header" onclick="toggleEl('hd-${date}')">
+          <div class="hd-date" ${isToday?'style="color:var(--lime2)"':''}>${isToday?'● ':''}${dutchShort(date)}</div>
+          <div class="hd-summary">${summary}</div>
+          <button class="btn btn-ghost btn-sm" style="flex-shrink:0;padding:5px 10px;font-size:10px" onclick="event.stopPropagation();openDayModal('${date}')">✎ Bewerk</button>
+          <span class="chev">▼</span>
+        </div>
+        <div class="hd-body">
+          ${rows}${notes}
+          <div class="btn-row" style="margin-top:8px">
+            <button class="btn btn-ghost btn-sm" onclick="openDayModal('${date}')">✎ Volledige dagregistratie</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
 
   el.innerHTML=html;
 }
@@ -1749,7 +1902,10 @@ function drawPKChart(canvasId, ds){
   if(!log||!log.doses?.length){ return; }
   const snap=log.snap||S.settings;
   const nm=ds===todayStr()?nowMin():-1;
-  drawPKChartDoses(canvasId, log.doses, snap, nm);
+  // Only plot doses that were actually taken
+  const takenDoses=log.doses.filter(d=>d.taken===true);
+  if(!takenDoses.length){ return; }
+  drawPKChartDoses(canvasId, takenDoses, snap, nm);
 }
 
 function drawLineChart(canvasId, dates, dataFn, label, color){
@@ -1851,28 +2007,29 @@ function drawBarChart(canvasId, labels, values, color){
 /* ═══════════════════════════════════════════════════
    CHARTS PAGE
 ═══════════════════════════════════════════════════ */
-// Which charts are enabled — persisted in settings
 const ALL_CHARTS = [
-  {id:'pk',      label:'Plasmaconcentratie vandaag',      dflt:true},
-  {id:'score',   label:'Gevoel over tijd',                dflt:true},
-  {id:'taken',   label:'Inname per week',                 dflt:true},
-  {id:'overlap', label:'Overlap-minuten per dag',         dflt:false},
-  {id:'dosecomp',label:'1e vs 2e dosis vergelijking',     dflt:false},
-  {id:'weekpat', label:'Weekpatroon (gem. per weekdag)',   dflt:true},
+  {id:'pk',      label:'Plasmaconcentratie',          dflt:true},
+  {id:'score',   label:'Gevoel over tijd',            dflt:true},
+  {id:'taken',   label:'Inname compliantie',          dflt:true},
+  {id:'overlap', label:'Overlap-minuten',             dflt:false},
+  {id:'dosecomp',label:'1e vs 2e dosis vergelijking', dflt:false},
+  {id:'weekpat', label:'Weekpatroon',                 dflt:true},
 ];
+
+let _pkDate = null; // selected date for PK chart, null = today
 
 function chartEnabled(id){ return S.settings.charts?.[id] ?? ALL_CHARTS.find(c=>c.id===id)?.dflt ?? true; }
 function toggleChart(id){ if(!S.settings.charts) S.settings.charts={}; S.settings.charts[id]=!chartEnabled(id); persist(); renderCharts(); }
+function setPKDate(ds){ _pkDate=ds||todayStr(); renderCharts(); }
 
 function renderCharts(){
   const el=document.getElementById('pg-charts');
   const today=todayStr();
+  const pkDs = _pkDate||today;
 
-  // Build 14-day date range
   const dates=[];
   for(let i=13;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); dates.push(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())); }
 
-  // Toggle buttons
   const toggles = ALL_CHARTS.map(c=>`
     <button class="chart-toggle ${chartEnabled(c.id)?'on':''}" onclick="toggleChart('${c.id}')">
       ${chartEnabled(c.id)?'✓ ':''} ${c.label}
@@ -1883,14 +2040,28 @@ function renderCharts(){
     <div class="page-sub">14 dagen · klik om te tonen/verbergen</div>
     <div class="chart-toggles">${toggles}</div>`;
 
-  // ── 1. PLASMA CONCENTRATION (today) ──
+  // ── 1. PLASMA CONCENTRATION ──
   if(chartEnabled('pk')){
+    const pkLog = getLog(pkDs);
+    const takenCount = pkLog?.doses?.filter(d=>d.taken===true).length||0;
+    const mrHL=(halfLife('MR',pkLog?.snap||S.settings)*60).toFixed(0);
+    const irHL=(halfLife('IR',pkLog?.snap||S.settings)*60).toFixed(0);
     html+=`<div class="chart-card">
-      <div class="chart-title">💊 Plasmaconcentratie — vandaag</div>
-      <div class="chart-sub">Bimodaal MR-model (SODAS 50/50) · drempel 20% = uitgewerkt · individuele doses gestippeld</div>
-      <div class="chart-wrap"><canvas id="cv-pk" width="680" height="220"></canvas></div>
+      <div class="chart-title">💊 Plasmaconcentratie</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <div class="chart-sub" style="margin:0">Enkel effectief ingenomen dosissen · drempel 20% = uitgewerkt</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <input type="date" id="pk-date-sel" value="${pkDs}" max="${today}"
+            style="font-size:11px;padding:4px 8px;border:1.5px solid var(--brd2);border-radius:var(--rxs);background:var(--white);color:var(--txt);font-family:inherit"
+            onchange="setPKDate(this.value)">
+          <button class="btn btn-ghost btn-sm" onclick="setPKDate('${today}')" style="font-size:10px;padding:4px 8px">Vandaag</button>
+        </div>
+      </div>
+      ${takenCount===0?`<div style="padding:14px;text-align:center;font-size:12px;color:var(--txt3)">Geen ingenomen dosissen op ${dutchShort(pkDs)}.</div>`:''}
+      <div class="chart-wrap" ${takenCount===0?'style="display:none"':''}><canvas id="cv-pk" width="680" height="220"></canvas></div>
       <div style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.6">
-        Berekend op basis van jouw werkingsprofiel: MR t½ = ${(halfLife('MR')*60).toFixed(0)} min · IR t½ = ${(halfLife('IR')*60).toFixed(0)} min
+        ${dutchShort(pkDs)} · MR t½ = ${mrHL} min · IR t½ = ${irHL} min
+        ${pkLog?.doses?.length?` · ${takenCount}/${pkLog.doses.length} dosissen ingenomen`:''}
       </div>
     </div>`;
   }
@@ -1904,11 +2075,11 @@ function renderCharts(){
     </div>`;
   }
 
-  // ── 3. TAKEN PER WEEK ──
+  // ── 3. TAKEN ──
   if(chartEnabled('taken')){
     html+=`<div class="chart-card">
       <div class="chart-title">✓ Inname compliantie — 14 dagen</div>
-      <div class="chart-sub">Genomen / niet genomen / onbekend per dag</div>
+      <div class="chart-sub">Groen = genomen · roze = niet genomen · grijs = onbekend</div>
       <div class="chart-wrap"><canvas id="cv-taken" width="680" height="160"></canvas></div>
     </div>`;
   }
@@ -1942,11 +2113,14 @@ function renderCharts(){
 
   el.innerHTML=html;
 
-  // Render canvases after DOM update
   requestAnimationFrame(()=>{
     scaleCanvases();
 
-    if(chartEnabled('pk')) drawPKChart('cv-pk', today);
+    if(chartEnabled('pk')){
+      const pkLog=getLog(pkDs);
+      const takenDoses=(pkLog?.doses||[]).filter(d=>d.taken===true);
+      if(takenDoses.length>0) drawPKChart('cv-pk', pkDs);
+    }
 
     if(chartEnabled('score')){
       drawLineChart('cv-score', dates,
@@ -1954,9 +2128,7 @@ function renderCharts(){
         'Gem. score', '#00b8d9');
     }
 
-    if(chartEnabled('taken')){
-      drawTakenChart('cv-taken', dates);
-    }
+    if(chartEnabled('taken')) drawTakenChart('cv-taken', dates);
 
     if(chartEnabled('overlap')){
       const olabels=dates.map(d=>new Date(d+'T12:00:00').toLocaleDateString('nl-BE',{day:'numeric',month:'short'}));
@@ -1970,13 +2142,8 @@ function renderCharts(){
       drawBarChart('cv-overlap', olabels, ovals, '#ff6b00');
     }
 
-    if(chartEnabled('dosecomp')){
-      drawDoseCompChart('cv-dosecomp');
-    }
-
-    if(chartEnabled('weekpat')){
-      drawWeekPatChart('cv-weekpat');
-    }
+    if(chartEnabled('dosecomp')) drawDoseCompChart('cv-dosecomp');
+    if(chartEnabled('weekpat'))  drawWeekPatChart('cv-weekpat');
   });
 }
 
@@ -2091,8 +2258,8 @@ function renderReport(){
     <div class="card card-pad" style="margin-bottom:14px">
       <div class="card-title">📅 Periode</div>
       <div class="form-row">
-        <div><div class="form-label">Van</div><input type="date" id="rp-from" value="${from}" max="${today}"></div>
-        <div><div class="form-label">Tot</div><input type="date" id="rp-to" value="${to}" max="${today}"></div>
+        <div><div class="form-label">Van</div><input type="date" id="rp-from" value="${from}" max="${today}" oninput="updateReportPreview()"></div>
+        <div><div class="form-label">Tot</div><input type="date" id="rp-to" value="${to}" max="${today}" oninput="updateReportPreview()"></div>
       </div>
       <div class="form-label">Naam patiënt (optioneel)</div>
       <input type="text" id="rp-name" placeholder="Jouw naam voor het rapport..." value="${S.settings.patientName||''}">
@@ -2112,8 +2279,8 @@ function renderReport(){
   setTimeout(()=>updateReportPreview(), 50);
 
   // Live update on date change
-  document.getElementById('rp-from').addEventListener('change', updateReportPreview);
-  document.getElementById('rp-to').addEventListener('change', updateReportPreview);
+  document.getElementById('rp-from').addEventListener('input', updateReportPreview);
+  document.getElementById('rp-to').addEventListener('input', updateReportPreview);
   document.getElementById('rp-name').addEventListener('input', e=>{ S.settings.patientName=e.target.value; persist(); });
 }
 
