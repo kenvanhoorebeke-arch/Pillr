@@ -4,635 +4,471 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Pillr">
-<meta name="theme-color" content="#05050a">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#ffffff">
 <title>Pillr</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* ── FONTS (embedded subset for offline) ─────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:      #05050a;
-  --s1:      #0e0e18;
-  --s2:      #141422;
-  --s3:      #1c1c2e;
-  --brd:     rgba(255,255,255,.08);
-  --brd2:    rgba(255,255,255,.14);
-  --lime:    #c8ff00;
-  --limed:   rgba(200,255,0,.12);
-  --pink:    #ff2d6b;
-  --pinkd:   rgba(255,45,107,.12);
-  --cyan:    #00e5ff;
-  --cyand:   rgba(0,229,255,.1);
-  --orange:  #ff7a00;
-  --oranged: rgba(255,122,0,.12);
-  --txt:     #f0f0f8;
-  --txt2:    #8080a0;
-  --txt3:    #404058;
-  --r:       14px;
-  --rsm:     9px;
-  --safe-t:  env(safe-area-inset-top, 0px);
-  --safe-b:  env(safe-area-inset-bottom, 0px);
+  --bg:      #f5f5f7;
+  --white:   #ffffff;
+  --s1:      #f0f0f4;
+  --s2:      #e8e8ee;
+  --brd:     rgba(0,0,0,.08);
+  --brd2:    rgba(0,0,0,.13);
+  --txt:     #0a0a14;
+  --txt2:    #606078;
+  --txt3:    #a0a0b8;
+
+  --lime:    #00e000;
+  --limed:   rgba(0,224,0,.1);
+  --lime2:   #00b800;
+  --pink:    #ff2060;
+  --pinkd:   rgba(255,32,96,.1);
+  --cyan:    #00b8d9;
+  --cyand:   rgba(0,184,217,.1);
+  --orange:  #ff6b00;
+  --oranged: rgba(255,107,0,.1);
+  --purple:  #7c3aed;
+  --purpled: rgba(124,58,237,.08);
+
+  --r:    16px;
+  --rsm:  10px;
+  --rxs:  7px;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --shadow: 0 2px 12px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 24px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
 }
 
 html { height: 100%; }
-
 body {
   background: var(--bg);
   color: var(--txt);
   font-family: 'Space Mono', ui-monospace, monospace;
   font-size: 13px;
   min-height: 100%;
-  overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* subtle grain */
-body::after {
-  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999; opacity:.25;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23f)' opacity='.04'/%3E%3C/svg%3E");
-}
-
-/* ── LAYOUT ──────────────────────────────────────────────────── */
-#app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-}
-
-/* ── HEADER ──────────────────────────────────────────────────── */
+/* ── HEADER ─────────────────────────────────────────── */
 header {
-  position: sticky; top: 0; z-index: 200;
-  background: rgba(5,5,10,.9);
+  position: sticky; top: 0; z-index: 300;
+  background: rgba(255,255,255,.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--brd);
   padding-top: var(--safe-t);
+  box-shadow: 0 1px 0 rgba(0,0,0,.06);
 }
-
 .header-inner {
-  display: flex; align-items: center; gap: 0;
-  padding: 0 16px;
-  height: 52px;
+  display: flex; align-items: center;
+  padding: 0 16px; height: 52px; gap: 0;
 }
-
 .logo {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800; font-size: 19px;
-  color: var(--lime); letter-spacing: -1px;
-  margin-right: 20px; flex-shrink: 0;
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 20px; letter-spacing: -1.5px;
+  color: var(--txt); margin-right: 4px; flex-shrink: 0;
 }
+.logo-dot { color: var(--lime); }
 
 .tabs {
-  display: flex; flex: 1;
-  overflow-x: auto; scrollbar-width: none;
-  gap: 0;
+  display: flex; flex: 1; overflow-x: auto;
+  scrollbar-width: none; padding-left: 12px;
 }
 .tabs::-webkit-scrollbar { display: none; }
-
 .tab {
-  padding: 0 14px; height: 52px;
+  padding: 0 12px; height: 52px;
   display: flex; align-items: center;
-  font-family: 'Syne', sans-serif;
-  font-size: 11px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--txt3); cursor: pointer;
+  font-family: 'Syne', sans-serif; font-size: 11px;
+  font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--txt3); cursor: pointer; white-space: nowrap;
   border-bottom: 2px solid transparent;
-  white-space: nowrap;
   transition: color .15s, border-color .15s;
   user-select: none;
-  -webkit-user-select: none;
 }
-.tab:active { opacity: .7; }
-.tab.on { color: var(--lime); border-bottom-color: var(--lime); }
+.tab.on { color: var(--txt); border-bottom-color: var(--lime); }
+.tab:active { opacity: .6; }
 
-/* ── MAIN ────────────────────────────────────────────────────── */
+/* ── MAIN ───────────────────────────────────────────── */
 main {
-  flex: 1;
-  padding: 20px 16px calc(20px + var(--safe-b));
-  max-width: 680px;
-  width: 100%;
-  margin: 0 auto;
-  position: relative; z-index: 1;
+  max-width: 680px; margin: 0 auto;
+  padding: 20px 16px calc(32px + var(--safe-b));
 }
 
 .pg { display: none; }
-.pg.on {
-  display: block;
-  animation: pgIn .2s cubic-bezier(.16,1,.3,1);
-}
-@keyframes pgIn {
-  from { opacity:0; transform:translateY(8px); }
-  to   { opacity:1; transform:translateY(0); }
-}
+.pg.on { display: block; animation: pgIn .2s cubic-bezier(.16,1,.3,1); }
+@keyframes pgIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-/* ── TYPOGRAPHY ──────────────────────────────────────────────── */
+/* ── TYPE ───────────────────────────────────────────── */
 .page-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800; font-size: clamp(26px,7vw,40px);
-  letter-spacing: -1.5px; line-height: 1;
-  color: var(--txt); margin-bottom: 4px;
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: clamp(24px,6vw,36px); letter-spacing: -1.5px;
+  line-height: 1; color: var(--txt); margin-bottom: 2px;
 }
-
-.page-sub {
-  font-size: 12px; color: var(--txt2); margin-bottom: 20px;
-}
+.page-sub { font-size: 12px; color: var(--txt2); margin-bottom: 20px; line-height: 1.5; }
 
 .sec-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 10px; font-weight: 700;
-  letter-spacing: .15em; text-transform: uppercase;
-  color: var(--txt3); margin: 24px 0 10px;
+  font-family: 'Syne', sans-serif; font-size: 10px;
+  font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--txt3); margin: 22px 0 10px;
   display: flex; align-items: center; gap: 8px;
 }
-.sec-label::after { content:''; flex:1; height:1px; background:var(--brd); }
+.sec-label::after { content:''; flex:1; height:1px; background:var(--brd2); }
 .sec-label:first-child { margin-top: 0; }
 
-/* ── CARDS ───────────────────────────────────────────────────── */
+/* ── CARDS ──────────────────────────────────────────── */
 .card {
-  background: var(--s1);
-  border: 1px solid var(--brd);
+  background: var(--white);
   border-radius: var(--r);
-  padding: 18px;
+  box-shadow: var(--shadow);
   margin-bottom: 12px;
-  position: relative; overflow: hidden;
+  overflow: hidden;
+  border: 1px solid var(--brd);
 }
+
+.card-pad { padding: 18px; }
 
 .card-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700; font-size: 13px;
-  color: var(--txt); margin-bottom: 14px;
+  font-family: 'Syne', sans-serif; font-weight: 700;
+  font-size: 13px; color: var(--txt);
   display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px;
 }
 
-/* ── INTAKE OVERVIEW (top of today) ─────────────────────────── */
-.intake-overview {
-  background: var(--s1);
-  border: 1px solid var(--brd);
+/* ── INTAKE OVERVIEW ────────────────────────────────── */
+.overview-card {
+  background: var(--white);
   border-radius: var(--r);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--brd);
   overflow: hidden;
   margin-bottom: 16px;
 }
 
-.intake-overview-header {
+.overview-header {
   padding: 14px 16px 10px;
-  border-bottom: 1px solid var(--brd);
   display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--brd);
 }
-
-.intake-overview-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 11px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--txt2);
+.overview-title {
+  font-family: 'Syne', sans-serif; font-size: 10px;
+  font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--txt3);
 }
 
 .intake-row {
   display: flex; align-items: center;
-  padding: 12px 16px;
-  gap: 14px;
+  padding: 12px 16px; gap: 14px;
   border-bottom: 1px solid var(--brd);
-  transition: background .15s;
+  transition: background .12s;
+  position: relative;
 }
 .intake-row:last-child { border-bottom: none; }
-.intake-row.now-active { background: rgba(200,255,0,.04); }
-.intake-row.is-past { opacity: .55; }
+.intake-row.is-active { background: rgba(0,224,0,.04); }
+.intake-row.is-past { opacity: .5; }
+
+.intake-color-bar {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; border-radius: 0 2px 2px 0;
+}
 
 .intake-time {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800; font-size: 22px;
-  letter-spacing: -1px; min-width: 58px;
-  flex-shrink: 0;
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 22px; letter-spacing: -1px;
+  min-width: 60px; flex-shrink: 0; padding-left: 8px;
 }
-
 .intake-details { flex: 1; }
-.intake-window {
-  font-size: 11px; color: var(--txt2); line-height: 1.7;
-}
+.intake-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 4px; }
+.intake-window { font-size: 11px; color: var(--txt2); }
 .intake-window strong { color: var(--txt); }
 
-.intake-status {
-  flex-shrink: 0;
-  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
-}
-
-/* ── TIMELINE BAR ────────────────────────────────────────────── */
+/* ── TIMELINE ───────────────────────────────────────── */
 .tl-wrap {
   padding: 12px 16px 14px;
   border-top: 1px solid var(--brd);
-  background: var(--s2);
+  background: var(--s1);
 }
-
 .tl-bar {
   position: relative; height: 8px;
-  background: var(--s3); border-radius: 4px;
-  margin-bottom: 6px; overflow: visible;
+  background: var(--s2); border-radius: 4px;
+  margin-bottom: 8px; overflow: visible;
 }
-
-.tl-seg {
-  position: absolute; top: 0; height: 100%; border-radius: 4px;
-}
-
-.tl-now {
-  position: absolute; top: -4px;
-  width: 2px; height: 16px;
-  background: #fff; border-radius: 1px;
+.tl-seg { position: absolute; top: 0; height: 100%; border-radius: 4px; }
+.tl-now-line {
+  position: absolute; top: -5px; width: 2px; height: 18px;
+  background: var(--txt); border-radius: 1px;
   transform: translateX(-50%); z-index: 5;
 }
-.tl-now::after {
+.tl-now-line::after {
   content: 'NU';
-  position: absolute; top: -13px; left: 50%;
+  position: absolute; bottom: -13px; left: 50%;
   transform: translateX(-50%);
-  font-family: 'Syne', sans-serif;
-  font-size: 8px; font-weight: 700;
-  color: #fff; white-space: nowrap;
-  letter-spacing: .08em;
+  font-family: 'Syne', sans-serif; font-size: 8px;
+  font-weight: 700; color: var(--txt); white-space: nowrap;
 }
-
 .tl-hours {
   display: flex; justify-content: space-between;
   font-size: 9px; color: var(--txt3);
   font-family: 'Syne', sans-serif; font-weight: 600;
 }
 
-/* ── BIG TAKEN BUTTON ────────────────────────────────────────── */
-.taken-big {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; margin-top: 10px;
-}
-
-.taken-btn {
-  padding: 13px 10px;
-  border-radius: var(--rsm);
-  border: 1px solid var(--brd2);
-  background: var(--s2);
-  color: var(--txt2);
-  font-family: 'Syne', sans-serif;
-  font-size: 13px; font-weight: 700;
-  cursor: pointer; text-align: center;
-  transition: all .15s;
-  -webkit-user-select: none;
-}
-.taken-btn:active { transform: scale(.97); }
-.taken-btn.yes {
-  background: var(--limed);
-  color: var(--lime);
-  border-color: rgba(200,255,0,.25);
-}
-.taken-btn.no {
-  background: var(--pinkd);
-  color: var(--pink);
-  border-color: rgba(255,45,107,.25);
-}
-
-/* ── LOG SECTION ─────────────────────────────────────────────── */
+/* ── DOSE LOG CARD ──────────────────────────────────── */
 .dose-log {
-  background: var(--s1);
-  border: 1px solid var(--brd);
+  background: var(--white);
   border-radius: var(--r);
-  overflow: hidden;
-  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--brd);
+  margin-bottom: 10px; overflow: hidden;
 }
+.dose-log.is-active { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(0,224,0,.12), var(--shadow); }
+.dose-log.is-past { opacity: .65; }
+.dose-log.not-taken { border-color: var(--pink); }
 
-.dose-log-header {
+.dl-header {
   display: flex; align-items: center;
-  padding: 14px 16px; gap: 12px;
+  padding: 13px 14px; gap: 10px;
   cursor: pointer; user-select: none;
   -webkit-user-select: none;
 }
-.dose-log-header:active { background: var(--s2); }
-
-.dlh-time {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800; font-size: 20px;
-  letter-spacing: -1px; flex-shrink: 0;
+.dl-header:active { background: var(--s1); }
+.dl-colorbar { width: 4px; height: 36px; border-radius: 2px; flex-shrink: 0; }
+.dl-time {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 20px; letter-spacing: -1px; flex-shrink: 0;
 }
+.dl-meta { flex: 1; display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+.dl-taken-icon { font-size: 18px; flex-shrink: 0; }
+.dl-chev { font-size: 10px; color: var(--txt3); transition: transform .2s; flex-shrink: 0; }
+.dose-log.open .dl-chev { transform: rotate(180deg); }
 
-.dlh-meta { flex: 1; }
-.dlh-taken { flex-shrink: 0; font-size: 16px; }
-.dlh-chevron {
-  font-size: 10px; color: var(--txt3);
-  transition: transform .2s; flex-shrink: 0;
-}
-.dose-log.open .dlh-chevron { transform: rotate(180deg); }
-
-.dose-log-body {
-  display: none;
-  padding: 0 16px 16px;
+.dl-body {
+  display: none; padding: 0 16px 16px;
   border-top: 1px solid var(--brd);
 }
-.dose-log.open .dose-log-body { display: block; }
+.dose-log.open .dl-body { display: block; }
 
-/* ── SCORE ROW ───────────────────────────────────────────────── */
-.score-row {
-  display: flex; gap: 6px; margin: 14px 0 10px;
-  flex-wrap: wrap;
+/* TAKEN BUTTONS */
+.taken-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;
 }
-
-.score-btn {
-  flex: 1; min-width: 44px;
-  padding: 10px 4px;
-  border-radius: var(--rsm);
-  border: 1px solid var(--brd);
-  background: var(--bg);
-  font-size: 18px; text-align: center;
-  cursor: pointer;
-  transition: all .15s;
+.taken-btn {
+  padding: 13px 8px; border-radius: var(--rsm);
+  border: 1.5px solid var(--brd2);
+  background: var(--s1); color: var(--txt2);
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; text-align: center; transition: all .15s;
   -webkit-user-select: none;
 }
-.score-btn:active { transform: scale(.92); }
-.score-btn.sel {
-  background: var(--limed);
-  border-color: rgba(200,255,0,.3);
-  transform: scale(1.08);
+.taken-btn:active { transform: scale(.96); }
+.taken-btn.yes { background: var(--limed); color: var(--lime2); border-color: var(--lime); }
+.taken-btn.no  { background: var(--pinkd); color: var(--pink);  border-color: var(--pink); }
+
+/* SCORE */
+.score-row { display: flex; gap: 5px; margin: 12px 0 10px; }
+.score-btn {
+  flex: 1; padding: 10px 4px;
+  border-radius: var(--rsm); border: 1.5px solid var(--brd);
+  background: var(--s1); font-size: 18px; text-align: center;
+  cursor: pointer; transition: all .15s; -webkit-user-select: none;
+}
+.score-btn:active { transform: scale(.9); }
+.score-btn.sel { background: var(--limed); border-color: var(--lime); transform: scale(1.08); }
+
+/* INLINE EDIT FIELDS inside dose log */
+.dl-field-row {
+  display: flex; gap: 8px; align-items: center;
+  margin-top: 10px; flex-wrap: wrap;
+}
+.dl-field-row label {
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--txt3); min-width: 50px;
+}
+.dl-field-row select,
+.dl-field-row input[type=time],
+.dl-field-row input[type=number] {
+  flex: 1; min-width: 70px;
 }
 
-/* ── TEXTAREA ────────────────────────────────────────────────── */
-textarea, input[type=text], input[type=time],
-input[type=date], input[type=number], select {
+/* ── FORM ELEMENTS ──────────────────────────────────── */
+textarea, input[type=text], input[type=date],
+input[type=time], input[type=number], select {
   width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--brd2);
+  background: var(--white);
+  border: 1.5px solid var(--brd2);
   border-radius: var(--rsm);
   color: var(--txt);
   font-family: 'Space Mono', monospace;
-  font-size: 13px;
-  padding: 10px 12px;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-  transition: border-color .2s;
+  font-size: 13px; padding: 9px 12px;
+  outline: none; -webkit-appearance: none; appearance: none;
+  transition: border-color .2s, box-shadow .2s;
 }
 textarea:focus, input:focus, select:focus {
   border-color: var(--lime);
-  box-shadow: 0 0 0 3px rgba(200,255,0,.1);
+  box-shadow: 0 0 0 3px rgba(0,224,0,.12);
 }
-textarea { resize: vertical; min-height: 70px; }
-select option { background: var(--s2); }
+textarea { resize: vertical; min-height: 68px; }
+select option { background: var(--white); }
 
 .form-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 10px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--txt3); margin-bottom: 5px; margin-top: 12px;
   display: block;
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--txt3); margin-bottom: 5px; margin-top: 13px;
 }
 .form-label:first-child { margin-top: 0; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-.form-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-}
-
-/* ── BUTTONS ─────────────────────────────────────────────────── */
+/* ── BUTTONS ────────────────────────────────────────── */
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 10px 18px; border-radius: var(--rsm);
-  border: none; cursor: pointer;
-  font-family: 'Syne', sans-serif;
-  font-size: 12px; font-weight: 700;
-  letter-spacing: .05em; text-transform: uppercase;
-  transition: all .15s; white-space: nowrap;
-  -webkit-user-select: none;
+  padding: 10px 18px; border-radius: var(--rsm); border: none;
+  cursor: pointer; font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; transition: all .15s;
+  white-space: nowrap; -webkit-user-select: none;
 }
-.btn:active { transform: scale(.97); }
+.btn:active { transform: scale(.96); }
 
-.btn-lime { background: var(--lime); color: #000; }
-.btn-lime:active { background: #b8ee00; }
+.btn-lime { background: var(--lime); color: #000; box-shadow: 0 2px 8px rgba(0,224,0,.3); }
+.btn-lime:active { background: var(--lime2); }
 
-.btn-ghost {
-  background: transparent; color: var(--txt2);
-  border: 1px solid var(--brd2);
-}
-.btn-ghost:active { color: var(--txt); }
+.btn-ghost { background: var(--white); color: var(--txt2); border: 1.5px solid var(--brd2); box-shadow: var(--shadow); }
+.btn-ghost:active { background: var(--s1); }
+
+.btn-pink { background: var(--pinkd); color: var(--pink); border: 1.5px solid rgba(255,32,96,.2); }
 
 .btn-sm { padding: 7px 13px; font-size: 11px; }
 
 .btn-icon {
   padding: 7px 9px; font-size: 13px;
   background: transparent; color: var(--txt3);
-  border: 1px solid transparent; border-radius: var(--rsm);
+  border: 1.5px solid var(--brd); border-radius: var(--rsm);
 }
-.btn-icon:active { color: var(--pink); background: var(--pinkd); }
+.btn-icon:active { background: var(--pinkd); color: var(--pink); border-color: rgba(255,32,96,.2); }
 
-.btn-row {
-  display: flex; gap: 8px; margin-top: 16px;
-  flex-wrap: wrap; align-items: center;
-}
+.btn-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; align-items: center; }
 
-.btn-block {
-  width: 100%; display: flex;
-  align-items: center; justify-content: center;
-}
-
-/* ── DASHED ADD BUTTON ───────────────────────────────────────── */
 .add-btn {
-  width: 100%; padding: 13px;
-  background: var(--s2);
-  border: 1px dashed var(--brd2);
-  border-radius: var(--r);
-  color: var(--txt2);
-  font-family: 'Syne', sans-serif;
-  font-size: 12px; font-weight: 600;
-  cursor: pointer; text-align: center;
-  transition: all .2s; margin-top: 4px;
+  width: 100%; padding: 13px; background: var(--white);
+  border: 1.5px dashed var(--brd2); border-radius: var(--r);
+  color: var(--txt2); font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 600; cursor: pointer; text-align: center;
+  transition: all .2s; margin-top: 4px; box-shadow: var(--shadow);
   -webkit-user-select: none;
 }
-.add-btn:active { color: var(--lime); border-color: rgba(200,255,0,.3); background: var(--limed); }
+.add-btn:active { color: var(--lime2); border-color: var(--lime); background: var(--limed); }
 
-/* ── TAGS ────────────────────────────────────────────────────── */
+/* ── TAGS ───────────────────────────────────────────── */
 .tag {
   display: inline-flex; align-items: center;
   padding: 2px 8px; border-radius: 20px;
-  font-family: 'Syne', sans-serif;
-  font-size: 10px; font-weight: 700;
-  letter-spacing: .04em; text-transform: uppercase;
+  font-family: 'Syne', sans-serif; font-size: 10px;
+  font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  border: 1px solid transparent;
 }
-.tag-mr  { background: var(--cyand);   color: var(--cyan);   border: 1px solid rgba(0,229,255,.2); }
-.tag-ir  { background: var(--oranged); color: var(--orange); border: 1px solid rgba(255,122,0,.2); }
-.tag-on  { background: var(--limed);   color: var(--lime);   border: 1px solid rgba(200,255,0,.25); }
-.tag-off { background: var(--s3);      color: var(--txt3);   border: 1px solid var(--brd); }
-.tag-fut { background: var(--s2);      color: var(--txt2);   border: 1px solid var(--brd2); }
+.tag-mr     { background: var(--cyand);   color: var(--cyan);   border-color: rgba(0,184,217,.25); }
+.tag-ir     { background: var(--oranged); color: var(--orange); border-color: rgba(255,107,0,.25); }
+.tag-active { background: var(--limed);   color: var(--lime2);  border-color: rgba(0,224,0,.3); }
+.tag-past   { background: var(--s2);      color: var(--txt3);   border-color: var(--brd2); }
+.tag-future { background: var(--s1);      color: var(--txt2);   border-color: var(--brd2); }
+.tag-onset  { background: var(--oranged); color: var(--orange); border-color: rgba(255,107,0,.25); }
+.tag-skip   { background: var(--pinkd);   color: var(--pink);   border-color: rgba(255,32,96,.2); }
+.tag-extra  { background: var(--purpled); color: var(--purple); border-color: rgba(124,58,237,.2); }
 
-/* ── PHASE CARD ──────────────────────────────────────────────── */
+/* ── PHASE CARD ─────────────────────────────────────── */
 .phase-card {
-  background: var(--s1);
-  border: 1px solid var(--brd);
-  border-radius: var(--r);
+  background: var(--white); border-radius: var(--r);
+  box-shadow: var(--shadow); border: 1px solid var(--brd);
   margin-bottom: 10px; overflow: hidden;
 }
-
 .pc-header {
   display: flex; align-items: center;
   padding: 14px 16px; gap: 10px;
-  cursor: pointer; user-select: none;
-  -webkit-user-select: none;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
 }
-.pc-header:active { background: var(--s2); }
-
-.pc-name {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700; font-size: 13px;
-  color: var(--txt); flex: 1;
-}
+.pc-header:active { background: var(--s1); }
+.pc-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; flex: 1; }
 .pc-dates { font-size: 11px; color: var(--txt3); }
-
-.pc-body {
-  display: none; padding: 0 16px 16px;
-  border-top: 1px solid var(--brd);
-}
+.pc-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--brd); }
 .phase-card.open .pc-body { display: block; }
 
 .pd-row {
-  display: flex; align-items: center;
-  padding: 10px 0; gap: 10px;
-  border-bottom: 1px solid var(--brd);
-  flex-wrap: wrap;
+  display: flex; align-items: center; padding: 10px 0; gap: 10px;
+  border-bottom: 1px solid var(--brd); flex-wrap: wrap;
 }
 .pd-row:last-of-type { border-bottom: none; }
-.pd-time {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700; font-size: 15px;
-  min-width: 48px;
-}
+.pd-time { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; min-width: 50px; }
 .pd-window { flex: 1; font-size: 11px; color: var(--txt2); }
 
-/* ── HISTORY ─────────────────────────────────────────────────── */
+/* ── HISTORY ────────────────────────────────────────── */
 .hist-day {
-  background: var(--s1);
-  border: 1px solid var(--brd);
-  border-radius: var(--r);
+  background: var(--white); border-radius: var(--r);
+  box-shadow: var(--shadow); border: 1px solid var(--brd);
   margin-bottom: 10px; overflow: hidden;
 }
-
 .hd-header {
-  display: flex; align-items: center;
-  padding: 13px 16px; gap: 12px;
-  cursor: pointer; user-select: none;
-  -webkit-user-select: none;
+  display: flex; align-items: center; padding: 13px 16px; gap: 12px;
+  cursor: pointer; user-select: none; -webkit-user-select: none;
 }
-.hd-header:active { background: var(--s2); }
-
-.hd-date {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700; font-size: 13px; min-width: 80px;
-}
-
+.hd-header:active { background: var(--s1); }
+.hd-date { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; min-width: 80px; }
 .hd-summary { flex: 1; font-size: 11px; color: var(--txt2); line-height: 1.5; }
-
-.hd-body {
-  display: none; padding: 0 16px 14px;
-  border-top: 1px solid var(--brd);
-}
+.hd-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--brd); }
 .hist-day.open .hd-body { display: block; }
 
 .he-row {
-  display: flex; align-items: flex-start;
-  padding: 10px 0; gap: 10px;
-  border-bottom: 1px solid var(--brd);
-  flex-wrap: wrap;
+  display: flex; align-items: flex-start; padding: 10px 0; gap: 10px;
+  border-bottom: 1px solid var(--brd); flex-wrap: wrap;
 }
 .he-row:last-child { border-bottom: none; }
-.he-time { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; min-width: 48px; flex-shrink: 0; }
+.he-time { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; min-width: 50px; flex-shrink: 0; }
 .he-detail { flex: 1; font-size: 12px; color: var(--txt2); line-height: 1.7; }
 
-.day-note-block {
-  margin-top: 10px; padding: 10px 12px;
-  background: var(--s2); border-radius: var(--rsm);
+.day-notes-block {
+  margin-top: 10px; padding: 12px 14px;
+  background: var(--s1); border-radius: var(--rsm);
   font-size: 12px; color: var(--txt2); line-height: 1.6;
 }
-.day-note-block strong { color: var(--txt); font-family: 'Syne', sans-serif; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.day-notes-block + .day-notes-block { margin-top: 6px; }
+.dnb-label {
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--txt3);
+  margin-bottom: 4px;
+}
 
-/* ── ALERT ───────────────────────────────────────────────────── */
+/* ── ALERTS ─────────────────────────────────────────── */
 .alert-warn {
-  background: var(--oranged);
-  border: 1px solid rgba(255,122,0,.2);
-  color: var(--orange);
-  padding: 10px 13px; border-radius: var(--rsm);
-  font-size: 12px; margin-bottom: 12px; line-height: 1.5;
+  background: #fff8f0; border: 1.5px solid rgba(255,107,0,.25);
+  color: var(--orange); padding: 10px 13px;
+  border-radius: var(--rsm); font-size: 12px;
+  margin-bottom: 12px; line-height: 1.5;
 }
-
 .info-box {
-  background: var(--cyand);
-  border: 1px solid rgba(0,229,255,.15);
-  color: var(--cyan);
-  padding: 10px 13px; border-radius: var(--rsm);
-  font-size: 12px; margin-bottom: 14px; line-height: 1.5;
+  background: #f0fbff; border: 1.5px solid rgba(0,184,217,.2);
+  color: var(--cyan); padding: 10px 13px;
+  border-radius: var(--rsm); font-size: 12px;
+  margin-bottom: 14px; line-height: 1.5;
 }
 
-/* ── MODAL ───────────────────────────────────────────────────── */
-#modal-wrap {
-  position: fixed; inset: 0; z-index: 900;
-  background: rgba(0,0,0,.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: none;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: var(--safe-b);
-}
-#modal-wrap.show { display: flex; animation: fadeWrap .15s; }
-@keyframes fadeWrap { from { opacity:0; } to { opacity:1; } }
-
-#modal-box {
-  background: var(--s1);
-  border: 1px solid var(--brd2);
-  border-radius: var(--r) var(--r) 0 0;
-  padding: 20px 18px calc(18px + var(--safe-b));
-  width: 100%; max-width: 680px;
-  max-height: 92vh; overflow-y: auto;
-  animation: slideUp .22s cubic-bezier(.16,1,.3,1);
-}
-@keyframes slideUp {
-  from { transform: translateY(30px); opacity:0; }
-  to   { transform: translateY(0);    opacity:1; }
-}
-
-.modal-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800; font-size: 18px;
-  letter-spacing: -.5px; margin-bottom: 18px;
-}
-
-.modal-handle {
-  width: 36px; height: 4px;
-  background: var(--brd2); border-radius: 2px;
-  margin: 0 auto 16px;
-}
-
-/* ── TOAST ───────────────────────────────────────────────────── */
-#toast {
-  position: fixed; bottom: calc(24px + var(--safe-b));
-  left: 50%; transform: translateX(-50%) translateY(80px);
-  background: var(--lime); color: #000;
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px;
-  padding: 9px 20px; border-radius: 99px; z-index: 9000;
-  transition: transform .28s cubic-bezier(.16,1,.3,1);
-  white-space: nowrap; pointer-events: none;
-}
-
-/* ── SETTINGS BLOCKS ─────────────────────────────────────────── */
+/* ── SETTINGS ───────────────────────────────────────── */
 .sblock {
-  background: var(--s2);
-  border: 1px solid var(--brd);
-  border-radius: var(--r);
-  padding: 16px; margin-bottom: 12px;
+  background: var(--white); border: 1px solid var(--brd);
+  border-radius: var(--r); padding: 16px;
+  margin-bottom: 12px; box-shadow: var(--shadow);
 }
 .sblock-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 11px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: var(--txt2); margin-bottom: 12px;
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--txt2); margin-bottom: 12px;
 }
-.sgrid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-}
+.sgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .sfield label {
   display: block; font-size: 10px; color: var(--txt3);
   letter-spacing: .1em; text-transform: uppercase;
@@ -642,131 +478,305 @@ select option { background: var(--s2); }
 .sfield .iu input { width: 72px; flex-shrink: 0; }
 .sfield .iu span { color: var(--txt2); font-size: 11px; }
 
-/* ── DOSE SLOT ───────────────────────────────────────────────── */
+/* ── MODAL ──────────────────────────────────────────── */
+#modal-wrap {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: none; align-items: flex-end; justify-content: center;
+  padding-bottom: var(--safe-b);
+}
+#modal-wrap.show { display: flex; animation: fadeWrap .15s; }
+@keyframes fadeWrap { from { opacity:0; } to { opacity:1; } }
+
+#modal-box {
+  background: var(--white); border: 1px solid var(--brd);
+  border-radius: var(--r) var(--r) 0 0;
+  padding: 8px 18px calc(18px + var(--safe-b));
+  width: 100%; max-width: 680px;
+  max-height: 92vh; overflow-y: auto;
+  box-shadow: 0 -8px 40px rgba(0,0,0,.15);
+  animation: slideUp .22s cubic-bezier(.16,1,.3,1);
+}
+@keyframes slideUp { from { transform:translateY(30px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+
+.modal-handle {
+  width: 36px; height: 4px; background: var(--brd2);
+  border-radius: 2px; margin: 8px auto 14px;
+}
+.modal-title {
+  font-family: 'Syne', sans-serif; font-weight: 800;
+  font-size: 18px; letter-spacing: -.5px; margin-bottom: 16px;
+}
+
+/* ── TOAST ──────────────────────────────────────────── */
+#toast {
+  position: fixed; bottom: calc(24px + var(--safe-b)); left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--txt); color: var(--white);
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px;
+  padding: 9px 20px; border-radius: 99px; z-index: 9000;
+  transition: transform .28s cubic-bezier(.16,1,.3,1);
+  white-space: nowrap; pointer-events: none;
+}
+
+/* ── DOSE SLOT ──────────────────────────────────────── */
 .dslot {
-  background: var(--bg);
-  border: 1px solid var(--brd2);
-  border-radius: var(--rsm);
-  padding: 12px; margin-top: 10px;
+  background: var(--s1); border: 1.5px solid var(--brd2);
+  border-radius: var(--rsm); padding: 12px; margin-top: 10px;
 }
 .dslot-hd {
-  font-family: 'Syne', sans-serif;
-  font-size: 10px; font-weight: 700;
-  letter-spacing: .08em; text-transform: uppercase;
-  color: var(--txt3); margin-bottom: 8px;
-  display: flex; justify-content: space-between; align-items: center;
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--txt3);
+  margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
 }
 
-/* ── EMPTY ───────────────────────────────────────────────────── */
-.empty {
-  text-align: center; padding: 44px 16px;
-  color: var(--txt2);
-}
-.empty-icon { font-size: 32px; margin-bottom: 10px; }
+/* ── EMPTY ──────────────────────────────────────────── */
+.empty { text-align: center; padding: 44px 16px; color: var(--txt2); }
+.empty-icon { font-size: 36px; margin-bottom: 10px; }
 .empty-text { font-size: 13px; line-height: 1.7; }
 
-/* ── CHEVRON ─────────────────────────────────────────────────── */
-.chev { font-size: 10px; color: var(--txt3); transition: transform .2s; }
+/* ── CHEVRON ────────────────────────────────────────── */
+.chev { font-size: 10px; color: var(--txt3); transition: transform .2s; flex-shrink: 0; }
 .open .chev { transform: rotate(180deg); }
+
+/* ── CHART STYLES ───────────────────────────────── */
+.chart-card {
+  background: var(--white); border-radius: var(--r);
+  box-shadow: var(--shadow); border: 1px solid var(--brd);
+  padding: 16px; margin-bottom: 14px;
+}
+.chart-title {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px;
+  color: var(--txt); margin-bottom: 3px;
+}
+.chart-sub { font-size: 11px; color: var(--txt3); margin-bottom: 12px; line-height: 1.4; }
+.chart-wrap { width: 100%; overflow: hidden; border-radius: var(--rsm); background: var(--white); }
+.chart-wrap canvas { width: 100% !important; display: block; }
+
+.chart-toggles {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px;
+}
+.chart-toggle {
+  padding: 5px 12px; border-radius: 99px;
+  border: 1.5px solid var(--brd2); background: var(--white);
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .04em; color: var(--txt2); cursor: pointer;
+  transition: all .15s; -webkit-user-select: none;
+}
+.chart-toggle.on { background: var(--limed); color: var(--lime2); border-color: var(--lime); }
+.chart-toggle:active { transform: scale(.96); }
+
+/* ── TEMPLATE CHOICE ────────────────────────────── */
+.template-choice {
+  background: var(--s1); border: 1.5px solid var(--brd2);
+  border-radius: var(--rsm); padding: 13px 14px;
+  margin-bottom: 8px; cursor: pointer; transition: all .15s;
+}
+.template-choice:hover  { border-color: var(--lime); }
+.template-choice:active { background: var(--limed); border-color: var(--lime); }
+
+/* ── HISTORY EMPTY DAY ──────────────────────────── */
+.hist-empty-day { opacity: .65; }
+
+/* ── CONFIRM DIALOG ─────────────────────────────────── */
+.confirm-box {
+  background: var(--white); border: 1px solid var(--brd);
+  border-radius: var(--r); padding: 20px;
+  box-shadow: var(--shadow-md); margin-top: 12px;
+}
+.sfield-hint {
+  font-size: 10px; color: var(--txt3); margin-top: 3px; line-height: 1.4;
+}
 </style>
 </head>
 <body>
-<div id="app">
-  <header>
-    <div class="header-inner">
-      <div class="logo">pillr</div>
-      <nav class="tabs">
-        <div class="tab on"  onclick="go('today')">Vandaag</div>
-        <div class="tab"     onclick="go('schema')">Schema</div>
-        <div class="tab"     onclick="go('history')">Historiek</div>
-        <div class="tab"     onclick="go('settings')">Instellingen</div>
-      </nav>
-    </div>
-  </header>
-  <main>
-    <div id="pg-today"    class="pg on"></div>
-    <div id="pg-schema"   class="pg"></div>
-    <div id="pg-history"  class="pg"></div>
-    <div id="pg-settings" class="pg"></div>
-  </main>
-</div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">pillr<span class="logo-dot">.</span></div>
+    <nav class="tabs">
+      <div class="tab on"  onclick="go('today')">Vandaag</div>
+      <div class="tab"     onclick="go('schema')">Schema</div>
+      <div class="tab"     onclick="go('history')">Historiek</div>
+      <div class="tab"     onclick="go('charts')">Grafieken</div>
+      <div class="tab"     onclick="go('report')">Rapport</div>
+      <div class="tab"     onclick="go('settings')">Instellingen</div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div id="pg-today"    class="pg on"></div>
+  <div id="pg-schema"   class="pg"></div>
+  <div id="pg-history"  class="pg"></div>
+  <div id="pg-charts"   class="pg"></div>
+  <div id="pg-report"   class="pg"></div>
+  <div id="pg-settings" class="pg"></div>
+</main>
 
 <div id="modal-wrap" onclick="modalBg(event)">
   <div id="modal-box"></div>
 </div>
-
 <div id="toast"></div>
 
 <script>
-/* ════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    STATE
-════════════════════════════════════════════════════════ */
-const DEFS = { mr:{ onset:60, duration:6 }, ir:{ onset:30, duration:4 } };
+═══════════════════════════════════════════════════ */
+const DEFS = { mr:{ onset:60, duration:6, delay:240, split:50 }, ir:{ onset:30, duration:4 } };
 
 let S = {
   settings: { mr:{...DEFS.mr}, ir:{...DEFS.ir} },
   phases: [],
+  // phases[i] = { id, name, start, end, notes, doses:[{time,type,mg}] }
+  // doses are TEMPLATES only — actual daily data lives in logs
+
   logs: {}
-  // logs[date] = {
-  //   snap: {mr,ir},
+  // logs["YYYY-MM-DD"] = {
+  //   snap: {mr,ir},           ← settings snapshot at log creation
+  //   fromTemplate: bool,      ← was this pre-filled from a phase?
   //   doses: [{time,type,mg,taken,score,note,extra}],
   //   dayNote: "",
   //   reflection: ""
   // }
 };
 
-function load(){
+function loadState(){
   try{
-    const d = localStorage.getItem('pillr3');
-    if(d){ const p=JSON.parse(d); S={...S,...p}; S.settings.mr={...DEFS.mr,...(S.settings?.mr||{})}; S.settings.ir={...DEFS.ir,...(S.settings?.ir||{})}; S.phases=S.phases||[]; S.logs=S.logs||{}; }
+    const d=localStorage.getItem('pillr4');
+    if(d){
+      const p=JSON.parse(d);
+      S={...S,...p};
+      S.settings={
+        mr:{...DEFS.mr,...(p.settings?.mr||{})},
+        ir:{...DEFS.ir,...(p.settings?.ir||{})},
+        charts: p.settings?.charts||{},
+        patientName: p.settings?.patientName||''
+      };
+      S.phases=S.phases||[]; S.logs=S.logs||{};
+    }
   }catch(e){}
 }
-function save(){ localStorage.setItem('pillr3', JSON.stringify(S)); }
+function persist(){ localStorage.setItem('pillr4', JSON.stringify(S)); }
 
-/* ════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    HELPERS
-════════════════════════════════════════════════════════ */
-const pad = n => String(n).padStart(2,'0');
-const t2m = t => { const[h,m]=t.split(':').map(Number); return h*60+m; };
-const m2t = m => pad(Math.floor(m/60)%24)+':'+pad(m%60);
-const uid = () => Math.random().toString(36).slice(2,8);
-const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+═══════════════════════════════════════════════════ */
+const pad  = n => String(n).padStart(2,'0');
+const t2m  = t => { const[h,m]=t.split(':').map(Number); return h*60+m; };
+const m2t  = m => pad(Math.floor(m/60)%24)+':'+pad(m%60);
+const uid  = () => Math.random().toString(36).slice(2,8);
+const esc  = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const nowMin = () => { const n=new Date(); return n.getHours()*60+n.getMinutes(); };
 const todayStr = () => { const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); };
 
-function dutchDay(ds){ return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'long'}); }
-function dutchFull(ds){ return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'long',day:'numeric',month:'long'}); }
-function dutchShort(ds){ return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'short',day:'numeric',month:'short'}); }
+function dutchFull(ds){ return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }
+function dutchMed(ds){  return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'long',day:'numeric',month:'long'}); }
+function dutchShort(ds){return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'short',day:'numeric',month:'short'}); }
+function dutchDay(ds){  return new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{weekday:'long'}); }
 
-function cfg(type, snap){ const s=snap||S.settings; return type==='MR'?s.mr:s.ir; }
+function cfgFor(type, snap){ const s=snap||S.settings; return type==='MR'?s.mr:s.ir; }
 
 function calcW(time, type, snap){
-  const c=cfg(type,snap), intake=t2m(time);
-  return { intake, start: intake+c.onset, end: intake+c.onset+Math.round(c.duration*60) };
+  const c=cfgFor(type,snap), i=t2m(time);
+  return { intake:i, start:i+c.onset, end:i+c.onset+Math.round(c.duration*60) };
 }
 
-function activePhase(ds){ return S.phases.find(p=>p.start<=ds&&(!p.end||p.end>=ds))||null; }
+function activePhase(ds){
+  return S.phases.find(p=>p.start<=ds&&(!p.end||p.end>=ds))||null;
+}
 
-function dayLog(ds){
-  ds = ds || todayStr();
-  if(!S.logs[ds]){
-    const ph=activePhase(ds);
-    S.logs[ds]={
-      snap: JSON.parse(JSON.stringify(S.settings)),
-      doses: ph&&ph.doses ? ph.doses.map(d=>({...d,taken:null,score:0,note:'',extra:false})) : [],
-      dayNote:'', reflection:''
-    };
-    save();
-  }
+/* ── Get or init day log ────────────────────────── */
+// Returns null if no log exists yet (caller decides what to show)
+function getLog(ds){
+  ds=ds||todayStr();
+  return S.logs[ds]||null;
+}
+
+// Create a blank log for a day (manual mode)
+function initBlankLog(ds){
+  ds=ds||todayStr();
+  S.logs[ds]={ snap:JSON.parse(JSON.stringify(S.settings)), fromTemplate:false, doses:[], dayNote:'', reflection:'' };
+  persist();
   return S.logs[ds];
 }
 
-/* ════════════════════════════════════════════════════════
+// Create a log from a specific phase template
+function initFromTemplate(ds, phaseId){
+  ds=ds||todayStr();
+  const ph=S.phases.find(p=>p.id===phaseId)||activePhase(ds);
+  S.logs[ds]={ snap:JSON.parse(JSON.stringify(S.settings)), fromTemplate:true, doses: ph&&ph.doses ? ph.doses.map(d=>({...d,taken:null,score:0,note:'',extra:false})) : [], dayNote: S.logs[ds]?.dayNote||'', reflection: S.logs[ds]?.reflection||'' };
+  persist();
+  return S.logs[ds];
+}
+
+// Ensure a log exists — create blank if not (safe fallback)
+function ensureLog(ds){
+  ds=ds||todayStr();
+  if(!S.logs[ds]) initBlankLog(ds);
+  return S.logs[ds];
+}
+
+/* ── Reinitialize a day from current phase template ─ */
+function reinitDay(ds){
+  const ph=activePhase(ds);
+  S.logs[ds]={
+    snap: JSON.parse(JSON.stringify(S.settings)),
+    fromTemplate: !!ph,
+    doses: ph&&ph.doses
+      ? ph.doses.map(d=>({...d, taken:null, score:0, note:'', extra:false}))
+      : [],
+    dayNote: S.logs[ds]?.dayNote||'',
+    reflection: S.logs[ds]?.reflection||''
+  };
+  persist();
+}
+
+/* ── After phase change: ask about affected logged days ─ */
+function askReinitAffectedDays(phaseId, oldStart, oldEnd, newStart, newEnd){
+  // find logged days in the union of old and new period
+  const start = oldStart < newStart ? oldStart : newStart;
+  const end   = (oldEnd||newEnd||'9999') > (newEnd||oldEnd||'9999') ? (oldEnd||'9999') : (newEnd||'9999');
+  const today = todayStr();
+  const affected = Object.keys(S.logs).filter(ds=>{
+    if(ds<start||ds>end) return false;
+    const log=S.logs[ds];
+    if(!log.doses||log.doses.length===0) return false;
+    return true;
+  });
+  if(affected.length===0) return;
+
+  const html=`
+    <div class="modal-handle"></div>
+    <div class="modal-title">Gelogde dagen aanpassen?</div>
+    <p style="font-size:13px;color:var(--txt2);line-height:1.6;margin-bottom:16px">
+      Je hebt <strong>${affected.length}</strong> reeds gelogde dag${affected.length>1?'en':''} in de gewijzigde periode:
+      <br>${affected.map(dutchShort).join(', ')}
+    </p>
+    <p style="font-size:12px;color:var(--txt2);line-height:1.5;margin-bottom:16px">
+      Wil je deze herinitialiseren vanuit het nieuwe sjabloon? <em>Scores en notities blijven bewaard, maar dosistijdstip/type/mg worden gereset naar het sjabloon.</em>
+    </p>
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="doReinit(${JSON.stringify(affected)})">Ja, herinitaliseer</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Nee, laat ongewijzigd</button>
+    </div>`;
+  openModal(html);
+}
+
+function doReinit(days){
+  days.forEach(ds=>reinitDay(ds));
+  closeModal();
+  toast(`✓ ${days.length} dag${days.length>1?'en':''} geüpdatet`);
+  if(curTab==='today') renderToday();
+}
+
+/* ═══════════════════════════════════════════════════
    NAV
-════════════════════════════════════════════════════════ */
-let curTab = 'today';
-const PAGES = ['today','schema','history','settings'];
-const REND  = { today:renderToday, schema:renderSchema, history:renderHistory, settings:renderSettings };
+═══════════════════════════════════════════════════ */
+let curTab='today';
+const PAGES=['today','schema','history','charts','report','settings'];
+const REND={today:renderToday,schema:renderSchema,history:renderHistory,charts:renderCharts,report:renderReport,settings:renderSettings};
 
 function go(id){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
@@ -776,250 +786,362 @@ function go(id){
   curTab=id; REND[id]();
 }
 
-/* ════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    TODAY
-════════════════════════════════════════════════════════ */
-function renderToday(){
-  const today=todayStr(), log=dayLog(today), snap=log.snap, nm=nowMin();
-  const doses=(log.doses||[]).map((d,i)=>({...d,i,...calcW(d.time,d.type,snap)}));
-  const day=dutchDay(today), dd=new Date().toLocaleDateString('nl-BE',{day:'numeric',month:'long',year:'numeric'});
-  const ph=activePhase(today);
+═══════════════════════════════════════════════════ */
+const COLS=['#00e000','#00b8d9','#ff6b00','#ff2060','#7c3aed'];
+const SE=['😞','😐','🙂','😊','🤩'];
+
+function renderToday(){ renderDayPage(todayStr(), 'pg-today'); }
+
+function renderDayPage(ds, containerId){
+  const isToday = ds===todayStr();
+  const log = getLog(ds);
+  const snap = log ? log.snap : S.settings;
+  const nm = isToday ? nowMin() : -1;
+  const ph = activePhase(ds);
+  const dayName = dutchDay(ds);
+  const dateStr = new Date(ds+'T12:00:00').toLocaleDateString('nl-BE',{day:'numeric',month:'long',year:'numeric'});
+
+  const doses = (log?.doses||[]).map((d,i)=>({...d,i,...calcW(d.time,d.type,snap)}));
 
   // overlap check
   let ow='';
   for(let i=0;i<doses.length-1;i++){
     const a=doses[i],b=doses[i+1];
-    if(a.taken!==false&&b.taken!==false&&b.start<a.end){
+    if(a.taken!==false&&b.taken!==false&&b.start<a.end)
       ow+=`⚠ Overlap dosis ${i+1} & ${i+2}: ~${a.end-b.start} min. `;
-    }
   }
 
-  const COLS=['#c8ff00','#00e5ff','#ff7a00','#ff2d6b'];
-  const SE=['😞','😐','🙂','😊','🤩'];
+  let html=`
+    <div class="page-title">${dayName.charAt(0).toUpperCase()+dayName.slice(1)}</div>
+    <div class="page-sub">${dateStr}${ph?` · <em>${esc(ph.name)}</em>`:''}</div>
+    ${ow?`<div class="alert-warn">${ow}</div>`:''}`;
 
-  // INTAKE OVERVIEW rows
-  const overviewRows = doses.map((d,i)=>{
-    const col=COLS[i%4];
-    const isPast=nm>d.end, isActive=nm>=d.start&&nm<=d.end, isOnset=nm>=d.intake&&nm<d.start;
-    let stag='';
-    if(d.taken===false) stag=`<span class="tag tag-off">❌ overgeslagen</span>`;
-    else if(isActive)   stag=`<span class="tag tag-on">● werkzaam</span>`;
-    else if(isOnset)    stag=`<span class="tag" style="background:var(--oranged);color:var(--orange);border:1px solid rgba(255,122,0,.2)">⟳ aanloop</span>`;
-    else if(isPast)     stag=`<span class="tag tag-off">uitgewerkt</span>`;
-    else                stag=`<span class="tag tag-fut">gepland</span>`;
+  // ── ACTION BAR: sjabloon / manueel knoppen ──────
+  const templateBtns = S.phases.length>0
+    ? `<button class="btn btn-lime btn-sm" onclick="openChooseTemplate('${ds}','${containerId}')">📋 Sjabloon toepassen</button>`
+    : '';
+  const manualBtn = `<button class="btn btn-ghost btn-sm" onclick="startManual('${ds}','${containerId}')">✏️ Manueel starten</button>`;
 
-    return `<div class="intake-row ${isActive?'now-active':''} ${isPast&&d.taken!==true?'is-past':''}">
-      <div class="intake-time" style="color:${col}">${d.time}</div>
-      <div class="intake-details">
-        <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;flex-wrap:wrap">
-          <span class="tag tag-${d.type.toLowerCase()}">${d.type} ${d.mg}mg</span>
-          ${stag}
+  if(!log || doses.length===0){
+    // No log yet or empty — show choice
+    html+=`
+      <div class="card card-pad" style="text-align:center;padding:28px 18px">
+        <div style="font-size:28px;margin-bottom:10px">💊</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px">Dag starten</div>
+        <div style="font-size:12px;color:var(--txt2);margin-bottom:18px;line-height:1.6">
+          ${ph?`Actief sjabloon: <strong>${esc(ph.name)}</strong>.<br>Pas het toe of start manueel.`:'Geen actief sjabloon voor deze dag. Kies een sjabloon of start manueel.'}
         </div>
-        <div class="intake-window">
-          Effect <strong>${m2t(d.start)}</strong> – <strong>${m2t(d.end)}</strong>
+        <div class="btn-row" style="justify-content:center">
+          ${templateBtns}
+          ${manualBtn}
         </div>
-      </div>
+      </div>`;
+  } else {
+    // Has doses — show action bar at top for flexibility
+    html+=`<div class="btn-row" style="margin-bottom:12px">
+      ${templateBtns}
+      ${manualBtn}
+      <button class="btn btn-ghost btn-sm" onclick="clearDay('${ds}','${containerId}')">🗑 Dag wissen</button>
     </div>`;
-  }).join('');
 
-  // TIMELINE
-  const tlHTML = doses.length>0 ? buildTL(doses,nm) : '';
-
-  // LOG sections per dose
-  const logSections = doses.map((d,i)=>{
-    const col=COLS[i%4];
-    const takenIcon = d.taken===true?'✓':d.taken===false?'✕':'–';
-    return `
-    <div class="dose-log" id="dl-${i}">
-      <div class="dose-log-header" onclick="toggleEl('dl-${i}')">
-        <div class="dlh-time" style="color:${col}">${d.time}</div>
-        <div class="dlh-meta">
-          <span class="tag tag-${d.type.toLowerCase()}">${d.type} ${d.mg}mg</span>
-          ${d.extra?'<span class="tag" style="background:var(--oranged);color:var(--orange);border:1px solid rgba(255,122,0,.2);margin-left:4px">extra</span>':''}
+    // INTAKE OVERVIEW
+    const rows=doses.map((d,i)=>{
+      const col=COLS[i%COLS.length];
+      const isPast=nm>0&&nm>d.end, isActive=nm>0&&nm>=d.start&&nm<=d.end, isOnset=nm>0&&nm>=d.intake&&nm<d.start;
+      let stag='';
+      if(d.taken===false)    stag=`<span class="tag tag-skip">❌ overgeslagen</span>`;
+      else if(isActive)      stag=`<span class="tag tag-active">● werkzaam</span>`;
+      else if(isOnset)       stag=`<span class="tag tag-onset">⟳ aanloop</span>`;
+      else if(isPast)        stag=`<span class="tag tag-past">uitgewerkt</span>`;
+      else                   stag=`<span class="tag tag-future">gepland</span>`;
+      return `<div class="intake-row ${isActive?'is-active':''} ${isPast&&d.taken!==true?'is-past':''}">
+        <div class="intake-color-bar" style="background:${col}"></div>
+        <div class="intake-time" style="color:${col}">${d.time}</div>
+        <div class="intake-details">
+          <div class="intake-tags">
+            <span class="tag tag-${d.type.toLowerCase()}">${d.type} ${d.mg}mg</span>
+            ${d.extra?'<span class="tag tag-extra">extra</span>':''}${stag}
+          </div>
+          <div class="intake-window">Effect <strong>${m2t(d.start)}</strong> – <strong>${m2t(d.end)}</strong></div>
         </div>
-        <div class="dlh-taken">${d.taken===true?'✅':d.taken===false?'❌':'⬜'}</div>
-        ${d.extra?`<button class="btn-icon" onclick="event.stopPropagation();rmExtra(${i})" style="font-size:12px;padding:4px 7px">✕</button>`:''}
-        <div class="dlh-chevron chev">▼</div>
-      </div>
-      <div class="dose-log-body">
-        <div class="form-label" style="margin-top:12px">Genomen?</div>
-        <div class="taken-big">
-          <button class="taken-btn ${d.taken===true?'yes':''}" onclick="setTaken(${i},true)">✓ Ja</button>
-          <button class="taken-btn ${d.taken===false?'no':''}"  onclick="setTaken(${i},false)">✕ Nee</button>
-        </div>
-        ${d.taken!==null?`<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="setTaken(${i},null)">↩ Reset</button>`:''}
+      </div>`;
+    }).join('');
 
-        <div class="form-label">Gevoel</div>
-        <div class="score-row">
-          ${SE.map((e,n)=>`<button class="score-btn ${d.score===n+1?'sel':''}" onclick="setScore(${i},${n+1})">${e}</button>`).join('')}
-        </div>
-
-        <div class="form-label">Opmerking bij dosis</div>
-        <input type="text" placeholder="bv. last van agitatie, slecht zicht..." value="${esc(d.note)}" oninput="setNote(${i},this.value)">
-      </div>
+    html+=`<div class="overview-card">
+      <div class="overview-header"><div class="overview-title">Innameschema</div></div>
+      ${rows}${buildTL(doses,nm)}
     </div>`;
-  }).join('');
 
-  const el=document.getElementById('pg-today');
-  el.innerHTML=`
-    <div class="page-title">${day.charAt(0).toUpperCase()+day.slice(1)}</div>
-    <div class="page-sub">${dd}${ph?` · ${esc(ph.name)}`:''}</div>
+    // LOG PER DOSIS
+    html+=`<div class="sec-label">Log per dosis</div>`;
+    doses.forEach((d,i)=>{
+      const col=COLS[i%COLS.length];
+      const isPast=nm>0&&nm>d.end, isActive=nm>0&&nm>=d.start&&nm<=d.end;
+      const takenIcon=d.taken===true?'✅':d.taken===false?'❌':'⬜';
+      let cls=isActive?'is-active':isPast&&d.taken===false?'not-taken':isPast?'is-past':'';
+      html+=`<div class="dose-log ${cls}" id="dl-${ds}-${i}">
+        <div class="dl-header" onclick="toggleEl('dl-${ds}-${i}')">
+          <div class="dl-colorbar" style="background:${col}"></div>
+          <div class="dl-time" style="color:${col}">${d.time}</div>
+          <div class="dl-meta">
+            <span class="tag tag-${d.type.toLowerCase()}">${d.type} ${d.mg}mg</span>
+            ${d.extra?'<span class="tag tag-extra">extra</span>':''}
+          </div>
+          <div class="dl-taken-icon">${takenIcon}</div>
+          ${d.extra?`<button class="btn-icon" onclick="event.stopPropagation();rmExtraDay('${ds}',${i},'${containerId}')" style="font-size:11px;padding:4px 7px">✕</button>`:''}
+          <div class="dl-chev chev">▼</div>
+        </div>
+        <div class="dl-body">
+          <div style="background:var(--s1);border-radius:var(--rsm);padding:10px 12px;margin-top:12px">
+            <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);margin-bottom:8px">Dosisgegevens</div>
+            <div class="form-row">
+              <div><div class="form-label">Tijdstip</div><input type="time" value="${d.time}" onchange="updateDoseFieldDay('${ds}',${i},'time',this.value,'${containerId}')"></div>
+              <div><div class="form-label">Type</div>
+                <select onchange="updateDoseFieldDay('${ds}',${i},'type',this.value,'${containerId}')">
+                  <option value="MR" ${d.type==='MR'?'selected':''}>MR</option>
+                  <option value="IR" ${d.type==='IR'?'selected':''}>IR</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-label">mg</div>
+            <input type="number" value="${d.mg}" min="5" max="80" onchange="updateDoseFieldDay('${ds}',${i},'mg',+this.value,'${containerId}')">
+          </div>
+          <div class="form-label" style="margin-top:14px">Genomen?</div>
+          <div class="taken-grid">
+            <button class="taken-btn ${d.taken===true?'yes':''}" onclick="setTakenDay('${ds}',${i},true,'${containerId}')">✓ Ja</button>
+            <button class="taken-btn ${d.taken===false?'no':''}"  onclick="setTakenDay('${ds}',${i},false,'${containerId}')">✕ Nee</button>
+          </div>
+          ${d.taken!==null?`<button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="setTakenDay('${ds}',${i},null,'${containerId}')">↩ Reset</button>`:''}
+          <div class="form-label">Gevoel</div>
+          <div class="score-row">
+            ${SE.map((e,n)=>`<button class="score-btn ${d.score===n+1?'sel':''}" onclick="setScoreDay('${ds}',${i},${n+1},'${containerId}')">${e}</button>`).join('')}
+          </div>
+          <div class="form-label">Opmerking</div>
+          <input type="text" placeholder="bv. agitatie, slecht zicht, goed effect..." value="${esc(d.note)}" oninput="setNoteDay('${ds}',${i},this.value)">
+        </div>
+      </div>`;
+    });
 
-    ${ow?`<div class="alert-warn">${ow}</div>`:''}
+    html+=`<button class="add-btn" onclick="openExtraDoseDay('${ds}','${containerId}')">✚ Extra dosis toevoegen</button>`;
+  }
 
-    ${doses.length>0?`
-    <div class="intake-overview">
-      <div class="intake-overview-header">
-        <div class="intake-overview-title">Innameschema vandaag</div>
-      </div>
-      ${overviewRows}
-      ${tlHTML}
-    </div>`:
-    `<div class="empty"><div class="empty-icon">💊</div><div class="empty-text">Geen actieve fase.<br>Maak een schema aan via <strong>Schema</strong>.</div></div>`}
+  // DAGNOTITIES — always visible
+  const dayNote = log?.dayNote||'';
+  const reflection = log?.reflection||'';
+  html+=`<div class="sec-label" style="margin-top:20px">Dagboek</div>
+  <div class="card card-pad">
+    <div class="form-label" style="margin-top:0">Algemene dagnotitie</div>
+    <textarea placeholder="Hoe was de dag? Energie, slaap, stemming..." oninput="setDayFieldDay('${ds}','dayNote',this.value)">${esc(dayNote)}</textarea>
+    <div class="form-label">Reflectie / hypothese</div>
+    <textarea placeholder="Vermoedens, vragen voor de dokter, observaties..." oninput="setDayFieldDay('${ds}','reflection',this.value)">${esc(reflection)}</textarea>
+  </div>`;
 
-    ${doses.length>0?`<div class="sec-label">Log per dosis</div>${logSections}`:''}
-
-    ${doses.length>0||ph?`<button class="add-btn" onclick="openExtraDose()">✚ Extra dosis toevoegen</button>`:''}
-
-    <div class="sec-label" style="margin-top:20px">Dagnotitie</div>
-    <div class="card" style="padding:14px">
-      <div class="form-label" style="margin-top:0">Algemene notitie</div>
-      <textarea placeholder="Hoe was de dag algemeen? Energie, slaap, stemming..." oninput="setDayField('dayNote',this.value)">${esc(log.dayNote)}</textarea>
-      <div class="form-label">Reflectie / hypothese</div>
-      <textarea placeholder="Vermoedens, vragen voor de dokter, observaties over de werking..." oninput="setDayField('reflection',this.value)">${esc(log.reflection)}</textarea>
-    </div>
-  `;
+  document.getElementById(containerId).innerHTML=html;
 }
 
-function buildTL(doses, nm){
-  const RS=6*60, RE=24*60, RNG=RE-RS;
+function buildTL(doses,nm){
+  const RS=6*60,RE=24*60,RNG=RE-RS;
   const pct=m=>Math.max(0,Math.min(100,(m-RS)/RNG*100)).toFixed(2);
-  const COLS=['#c8ff00','#00e5ff','#ff7a00','#ff2d6b'];
   let segs='';
   doses.forEach((d,i)=>{
     if(d.taken===false) return;
-    const col=COLS[i%4];
-    const ow=pct(d.start)-pct(d.intake);
+    const col=COLS[i%COLS.length];
+    const ow=+pct(d.start)-+pct(d.intake);
     if(ow>0) segs+=`<div class="tl-seg" style="left:${pct(d.intake)}%;width:${ow}%;background:${col};opacity:.2;border-radius:4px 0 0 4px"></div>`;
-    segs+=`<div class="tl-seg" style="left:${pct(d.start)}%;width:${pct(d.end)-pct(d.start)}%;background:${col};opacity:.8"></div>`;
+    segs+=`<div class="tl-seg" style="left:${pct(d.start)}%;width:${+pct(d.end)-+pct(d.start)}%;background:${col};opacity:.75"></div>`;
   });
-  const nowP=nm>=RS&&nm<=RE?pct(nm):null;
+  const np=nm>=RS&&nm<=RE?pct(nm):null;
   const hours=[6,8,10,12,14,16,18,20,22,24];
-  return `
-  <div class="tl-wrap">
-    <div class="tl-bar">
-      ${segs}
-      ${nowP!==null?`<div class="tl-now" style="left:${nowP}%"></div>`:''}
-    </div>
+  return `<div class="tl-wrap">
+    <div class="tl-bar">${segs}${np!==null?`<div class="tl-now-line" style="left:${np}%"></div>`:''}</div>
     <div class="tl-hours">${hours.map(h=>`<span>${h===24?'0':h}u</span>`).join('')}</div>
   </div>`;
 }
 
-function toggleEl(id){ document.getElementById(id).classList.toggle('open'); }
+/* ── Day-aware action helpers ───────────────────── */
+function toggleEl(id){ const el=document.getElementById(id); if(el) el.classList.toggle('open'); }
+function updateDoseFieldDay(ds,i,field,val,cid){ ensureLog(ds).doses[i][field]=val; persist(); renderDayPage(ds,cid); }
+function setTakenDay(ds,i,v,cid){ ensureLog(ds).doses[i].taken=v; persist(); renderDayPage(ds,cid); }
+function setScoreDay(ds,i,v,cid){ const d=ensureLog(ds).doses[i]; d.score=(d.score===v?0:v); persist(); renderDayPage(ds,cid); }
+function setNoteDay(ds,i,v){ ensureLog(ds).doses[i].note=v; persist(); }
+function setDayFieldDay(ds,f,v){ ensureLog(ds)[f]=v; persist(); }
+function rmExtraDay(ds,i,cid){ ensureLog(ds).doses.splice(i,1); persist(); renderDayPage(ds,cid); }
 
-function setTaken(i,v){
-  const log=dayLog(); log.doses[i].taken=v; save(); renderToday();
+function clearDay(ds,cid){
+  if(!confirm('Dag wissen? Alle dosisdata voor deze dag wordt verwijderd. Notities blijven bewaard.')) return;
+  const notes={dayNote:S.logs[ds]?.dayNote||'',reflection:S.logs[ds]?.reflection||''};
+  S.logs[ds]={snap:JSON.parse(JSON.stringify(S.settings)),fromTemplate:false,doses:[],...notes};
+  persist(); renderDayPage(ds,cid);
 }
-function setScore(i,v){
-  const log=dayLog(); if(log.doses[i].score===v) log.doses[i].score=0; else log.doses[i].score=v; save(); renderToday();
-}
-function setNote(i,v){ const log=dayLog(); log.doses[i].note=v; save(); }
-function setDayField(field,v){ const log=dayLog(); log[field]=v; save(); }
-function rmExtra(i){ const log=dayLog(); log.doses.splice(i,1); save(); renderToday(); }
 
-function openExtraDose(){
+// Shorthand for today
+function updateDoseField(i,field,val){ updateDoseFieldDay(todayStr(),i,field,val,'pg-today'); }
+function setTaken(i,v){ setTakenDay(todayStr(),i,v,'pg-today'); }
+function setScore(i,v){ setScoreDay(todayStr(),i,v,'pg-today'); }
+function setNote(i,v){ setNoteDay(todayStr(),i,v); }
+function setDayField(f,v){ setDayFieldDay(todayStr(),f,v); }
+function rmExtra(i){ rmExtraDay(todayStr(),i,'pg-today'); }
+
+/* ── Template chooser ───────────────────────────── */
+function openChooseTemplate(ds, cid){
+  if(S.phases.length===0){ toast('Geen sjablonen beschikbaar'); return; }
+  const opts = S.phases.map(ph=>`
+    <div class="template-choice" onclick="applyTemplate('${ds}','${ph.id}','${cid}')">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px">${esc(ph.name)}</div>
+      <div style="font-size:11px;color:var(--txt2);margin-top:2px">${ph.start}${ph.end?' → '+ph.end:''} · ${(ph.doses||[]).length} dosis${(ph.doses||[]).length!==1?'sen':''}</div>
+      <div style="font-size:11px;color:var(--txt2);margin-top:2px">${(ph.doses||[]).map(d=>`${d.time} ${d.mg}mg ${d.type}`).join(' · ')}</div>
+    </div>`).join('');
+  openModal(`<div class="modal-handle"></div>
+    <div class="modal-title">Sjabloon kiezen</div>
+    <p style="font-size:12px;color:var(--txt2);margin-bottom:14px;line-height:1.5">Kies een sjabloon voor <strong>${dutchShort(ds)}</strong>. Je kan daarna alles nog aanpassen.</p>
+    ${opts}
+    <div class="btn-row"><button class="btn btn-ghost" onclick="closeModal()">Annuleer</button></div>`);
+}
+
+function applyTemplate(ds, phaseId, cid){
+  const existing = S.logs[ds];
+  const hasData = existing && (existing.doses?.some(d=>d.taken!==null||d.score||d.note) || existing.dayNote || existing.reflection);
+  if(hasData && !confirm('Er zijn al gegevens voor deze dag. Dosissen worden overschreven (notities blijven bewaard). Doorgaan?')){ return; }
+  initFromTemplate(ds, phaseId);
+  closeModal();
+  renderDayPage(ds, cid);
+  toast('✓ Sjabloon toegepast');
+}
+
+function startManual(ds, cid){
+  const existing = S.logs[ds];
+  const hasDoses = existing?.doses?.length>0;
+  if(hasDoses && !confirm('Bestaande dosissen wissen en manueel starten?')) return;
+  if(!S.logs[ds]) initBlankLog(ds);
+  else { S.logs[ds].doses=[]; persist(); }
+  openAddDoseForDay(ds, cid);
+}
+
+function openAddDoseForDay(ds, cid){
   const n=new Date();
-  openModal(`
-    <div class="modal-handle"></div>
-    <div class="modal-title">✚ Extra dosis</div>
-    <div class="form-label">Tijdstip</div>
-    <input type="time" id="ex-t" value="${pad(n.getHours())}:${pad(n.getMinutes())}">
+  const defaultTime = ds===todayStr() ? `${pad(n.getHours())}:${pad(n.getMinutes())}` : '08:00';
+  openModal(`<div class="modal-handle"></div>
+    <div class="modal-title">✚ Dosis toevoegen</div>
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:14px">${dutchShort(ds)}</div>
+    <div class="form-label">Tijdstip</div><input type="time" id="ad-t" value="${defaultTime}">
+    <div class="form-label">Type</div>
+    <select id="ad-tp"><option value="MR">MR</option><option value="IR">IR</option></select>
+    <div class="form-label">mg</div><input type="number" id="ad-mg" value="18" min="5" max="80">
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="confirmAddDoseForDay('${ds}','${cid}',false)">Toevoegen</button>
+      <button class="btn btn-lime" onclick="confirmAddDoseForDay('${ds}','${cid}',true)">Toevoegen & nog een</button>
+      <button class="btn btn-ghost" onclick="closeModal();renderDayPage('${ds}','${cid}')">Klaar</button>
+    </div>`);
+}
+
+function confirmAddDoseForDay(ds, cid, another){
+  const t=document.getElementById('ad-t').value;
+  if(!t){toast('Tijdstip verplicht');return;}
+  ensureLog(ds).doses.push({time:t,type:document.getElementById('ad-tp').value,mg:+document.getElementById('ad-mg').value,taken:null,score:0,note:'',extra:false});
+  ensureLog(ds).doses.sort((a,b)=>t2m(a.time)-t2m(b.time));
+  persist();
+  if(another){ openAddDoseForDay(ds,cid); } else { closeModal(); renderDayPage(ds,cid); }
+}
+
+function openExtraDose(){ openExtraDoseDay(todayStr(),'pg-today'); }
+function openExtraDoseDay(ds,cid){
+  const n=new Date();
+  const defaultTime = ds===todayStr() ? `${pad(n.getHours())}:${pad(n.getMinutes())}` : '12:00';
+  openModal(`<div class="modal-handle"></div><div class="modal-title">✚ Extra dosis</div>
+    <div class="form-label">Tijdstip</div><input type="time" id="ex-t" value="${defaultTime}">
     <div class="form-label">Type</div>
     <select id="ex-tp"><option value="MR">MR</option><option value="IR">IR</option></select>
-    <div class="form-label">Dosis (mg)</div>
-    <input type="number" id="ex-mg" value="10" min="5" max="60">
-    <div class="form-label">Opmerking</div>
-    <input type="text" id="ex-nt" placeholder="Reden extra dosis...">
+    <div class="form-label">mg</div><input type="number" id="ex-mg" value="10" min="5" max="60">
+    <div class="form-label">Opmerking</div><input type="text" id="ex-nt" placeholder="Reden extra dosis...">
     <div class="btn-row">
-      <button class="btn btn-lime" onclick="confirmExtra()">Toevoegen</button>
+      <button class="btn btn-lime" onclick="confirmExtraDay('${ds}','${cid}')">Toevoegen</button>
       <button class="btn btn-ghost" onclick="closeModal()">Annuleer</button>
     </div>`);
 }
-function confirmExtra(){
+function confirmExtra(){ confirmExtraDay(todayStr(),'pg-today'); }
+function confirmExtraDay(ds,cid){
   const t=document.getElementById('ex-t').value;
   if(!t){toast('Tijdstip verplicht');return;}
-  const log=dayLog();
-  log.doses.push({time:t,type:document.getElementById('ex-tp').value,mg:+document.getElementById('ex-mg').value,taken:null,score:0,note:document.getElementById('ex-nt').value,extra:true});
-  log.doses.sort((a,b)=>t2m(a.time)-t2m(b.time));
-  save(); closeModal(); renderToday();
+  ensureLog(ds).doses.push({time:t,type:document.getElementById('ex-tp').value,mg:+document.getElementById('ex-mg').value,taken:null,score:0,note:document.getElementById('ex-nt').value,extra:true});
+  ensureLog(ds).doses.sort((a,b)=>t2m(a.time)-t2m(b.time));
+  persist(); closeModal(); renderDayPage(ds,cid);
 }
 
-/* ════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    SCHEMA
-════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 let slots=[];
 
 function renderSchema(){
   const today=todayStr();
-  let html='<div class="sec-label">Titratiefasen</div>';
-  if(S.phases.length===0) html+=`<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Nog geen fasen.</div></div>`;
+  let html='';
 
-  S.phases.forEach((ph,pi)=>{
-    const st=ph.start>today?'fut':(ph.end&&ph.end<today?'off':'on');
-    const stLabel={on:'Actief',fut:'Gepland',off:'Afgelopen'}[st];
-    const COLS=['#c8ff00','#00e5ff','#ff7a00','#ff2d6b'];
-    const doseRows=(ph.doses||[]).map((d,di)=>{
-      const w=calcW(d.time,d.type);
-      return `<div class="pd-row">
-        <div class="pd-time" style="color:${COLS[di%4]}">${d.time}</div>
-        <span class="tag tag-${d.type.toLowerCase()}">${d.type} ${d.mg}mg</span>
-        <div class="pd-window">Effect ${m2t(w.start)}–${m2t(w.end)}</div>
-        <button class="btn-icon" onclick="event.stopPropagation();openEditDose(${pi},${di})">✎</button>
-        <button class="btn-icon" onclick="event.stopPropagation();delDose(${pi},${di})">✕</button>
-      </div>`;
-    }).join('');
+  if(S.phases.length===0){
+    html+=`<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Nog geen sjablonen.<br>Maak er een aan hieronder.</div></div>`;
+  } else {
+    html+=`<div class="sec-label">Sjablonen</div>`;
+    html+=`<div class="info-box" style="font-size:12px">Fasen zijn <strong>sjablonen</strong>. Ze bepalen wat er standaard wordt vooringevuld op een dag. Elke dag kan je de gegevens individueel aanpassen via Vandaag.</div>`;
+    S.phases.forEach((ph,pi)=>{
+      const st=ph.start>today?'future':(ph.end&&ph.end<today?'past':'active');
+      const stLabel={active:'Actief',future:'Gepland',past:'Afgelopen'}[st];
+      const stTag=`tag-${st==='active'?'active':st==='future'?'future':'past'}`;
+      const doseRows=(ph.doses||[]).map((d,di)=>{
+        const w=calcW(d.time,d.type);
+        return `<div class="pd-row">
+          <div class="pd-time" style="color:${COLS[di%COLS.length]}">${d.time}</div>
+          <span class="tag tag-${d.type.toLowerCase()}">${d.type} ${d.mg}mg</span>
+          <div class="pd-window">Effect ${m2t(w.start)}–${m2t(w.end)}</div>
+          <button class="btn-icon" onclick="event.stopPropagation();openEditDose(${pi},${di})">✎</button>
+          <button class="btn-icon" onclick="event.stopPropagation();delDose(${pi},${di})">✕</button>
+        </div>`;
+      }).join('');
 
-    html+=`<div class="phase-card" id="pc-${pi}">
-      <div class="pc-header" onclick="toggleEl('pc-${pi}')">
-        <div class="pc-name">${esc(ph.name)}</div>
-        <span class="tag tag-${st}">${stLabel}</span>
-        <div class="pc-dates">${ph.start}${ph.end?' → '+ph.end:''}</div>
-        <button class="btn-icon" onclick="event.stopPropagation();openEditPhase(${pi})">✎</button>
-        <button class="btn-icon" onclick="event.stopPropagation();delPhase(${pi})">✕</button>
-        <span class="chev">▼</span>
-      </div>
-      <div class="pc-body">
-        ${ph.notes?`<p style="font-size:12px;color:var(--txt2);margin:12px 0 8px;line-height:1.6">📝 ${esc(ph.notes)}</p>`:''}
-        ${doseRows}
-        <div class="btn-row" style="margin-top:10px">
-          <button class="btn btn-ghost btn-sm" onclick="openAddDose(${pi})">+ Dosis</button>
+      html+=`<div class="phase-card" id="pc-${pi}">
+        <div class="pc-header" onclick="toggleEl('pc-${pi}')">
+          <div class="pc-name">${esc(ph.name)}</div>
+          <span class="tag ${stTag}">${stLabel}</span>
+          <div class="pc-dates">${ph.start}${ph.end?' → '+ph.end:''}</div>
+          <button class="btn-icon" onclick="event.stopPropagation();openEditPhase(${pi})">✎</button>
+          <button class="btn-icon" onclick="event.stopPropagation();delPhase(${pi})">✕</button>
+          <span class="chev">▼</span>
         </div>
-      </div>
-    </div>`;
-  });
+        <div class="pc-body">
+          ${ph.notes?`<p style="font-size:12px;color:var(--txt2);margin:12px 0 8px;line-height:1.6">📝 ${esc(ph.notes)}</p>`:''}
+          ${doseRows}
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn btn-ghost btn-sm" onclick="openAddDose(${pi})">+ Dosis toevoegen</button>
+          </div>
+        </div>
+      </div>`;
+    });
+  }
 
-  html+=`<div style="margin-top:16px"><button class="btn btn-lime" onclick="openAddPhase()">+ Nieuwe fase</button></div>`;
+  html+=`<div style="margin-top:14px"><button class="btn btn-lime" onclick="openAddPhase()">+ Nieuw sjabloon</button></div>`;
   document.getElementById('pg-schema').innerHTML=html;
 }
 
 function phaseFormHTML(ph){
   return `
-    <div class="form-label">Naam</div>
+    <div class="form-label">Naam sjabloon</div>
     <input type="text" id="ph-n" value="${esc(ph?.name||'')}">
     <div class="form-row">
-      <div><div class="form-label">Start</div><input type="date" id="ph-s" value="${ph?.start||''}"></div>
-      <div><div class="form-label">Einde (opt.)</div><input type="date" id="ph-e" value="${ph?.end||''}"></div>
+      <div><div class="form-label">Startdatum</div><input type="date" id="ph-s" value="${ph?.start||''}"></div>
+      <div><div class="form-label">Einddatum (opt.)</div><input type="date" id="ph-e" value="${ph?.end||''}"></div>
     </div>
     <div class="form-label">Notities neuroloog</div>
     <textarea id="ph-nt">${esc(ph?.notes||'')}</textarea>
-    <div class="sec-label" style="margin-top:14px">Dosissen</div>
+    <div class="sec-label" style="margin-top:14px">Standaard dosissen</div>
     <div id="slot-wrap">${slots.map(slotHTML).join('')}</div>
-    <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="addSlot()">+ Dosis</button>`;
+    <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="addSlot()">+ Dosis toevoegen</button>`;
 }
 
 function slotHTML(d,i){
   return `<div class="dslot" id="sl-${i}">
-    <div class="dslot-hd">Dosis ${i+1} <button class="btn-icon" onclick="rmSlot(${i})" style="font-size:11px;padding:3px 7px">✕</button></div>
+    <div class="dslot-hd">Dosis ${i+1}
+      <button class="btn-icon" onclick="rmSlot(${i})" style="font-size:11px;padding:3px 7px">✕</button>
+    </div>
     <div class="form-row">
       <div><div class="form-label">Tijdstip</div><input type="time" value="${d.time||''}" onchange="slots[${i}].time=this.value"></div>
       <div><div class="form-label">Type</div>
@@ -1046,28 +1168,66 @@ function syncSlots(){
   });
 }
 
-function openAddPhase(){ slots=[]; openModal(`<div class="modal-handle"></div><div class="modal-title">Nieuwe fase</div>${phaseFormHTML(null)}<div class="btn-row"><button class="btn btn-lime" onclick="savePhase(null)">Aanmaken</button><button class="btn btn-ghost" onclick="closeModal()">Annuleer</button></div>`); }
-function openEditPhase(pi){ slots=JSON.parse(JSON.stringify(S.phases[pi].doses||[])); openModal(`<div class="modal-handle"></div><div class="modal-title">Fase bewerken</div>${phaseFormHTML(S.phases[pi])}<div class="btn-row"><button class="btn btn-lime" onclick="savePhase(${pi})">Opslaan</button><button class="btn btn-ghost" onclick="closeModal()">Annuleer</button></div>`); }
+let _editingPhaseIdx=null;
 
-function savePhase(pi){
+function openAddPhase(){
+  slots=[]; _editingPhaseIdx=null;
+  openModal(`<div class="modal-handle"></div><div class="modal-title">Nieuw sjabloon</div>
+    ${phaseFormHTML(null)}
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="savePhase()">Aanmaken</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Annuleer</button>
+    </div>`);
+}
+
+function openEditPhase(pi){
+  _editingPhaseIdx=pi;
+  slots=JSON.parse(JSON.stringify(S.phases[pi].doses||[]));
+  openModal(`<div class="modal-handle"></div><div class="modal-title">Sjabloon bewerken</div>
+    ${phaseFormHTML(S.phases[pi])}
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="savePhase()">Opslaan</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Annuleer</button>
+    </div>`);
+}
+
+function savePhase(){
   syncSlots();
   const name=document.getElementById('ph-n').value.trim();
   const start=document.getElementById('ph-s').value;
   if(!name||!start){toast('Naam en startdatum verplicht');return;}
   if(slots.some(d=>!d.time)){toast('Geef elk dosis een tijdstip');return;}
-  const ph={id:pi!==null?S.phases[pi].id:uid(),name,start,end:document.getElementById('ph-e').value,notes:document.getElementById('ph-nt').value.trim(),doses:JSON.parse(JSON.stringify(slots))};
+
+  const pi=_editingPhaseIdx;
+  const oldPh=pi!==null?S.phases[pi]:null;
+  const ph={
+    id: oldPh?oldPh.id:uid(), name, start,
+    end: document.getElementById('ph-e').value,
+    notes: document.getElementById('ph-nt').value.trim(),
+    doses: JSON.parse(JSON.stringify(slots))
+  };
+
   if(pi!==null){ S.phases[pi]=ph; } else { S.phases.push(ph); S.phases.sort((a,b)=>a.start.localeCompare(b.start)); }
-  save(); closeModal(); renderSchema();
+  persist(); closeModal(); renderSchema();
+
+  // ask about affected logged days
+  setTimeout(()=>askReinitAffectedDays(ph.id, oldPh?.start||ph.start, oldPh?.end, ph.start, ph.end), 200);
 }
 
-function delPhase(pi){ if(!confirm('Fase verwijderen?'))return; S.phases.splice(pi,1); save(); renderSchema(); }
+function delPhase(pi){
+  if(!confirm('Sjabloon verwijderen?'))return;
+  S.phases.splice(pi,1); persist(); renderSchema();
+}
 
 function openAddDose(pi){
   openModal(`<div class="modal-handle"></div><div class="modal-title">Dosis toevoegen</div>
     <div class="form-label">Tijdstip</div><input type="time" id="nd-t">
     <div class="form-label">Type</div><select id="nd-tp"><option value="MR">MR</option><option value="IR">IR</option></select>
     <div class="form-label">mg</div><input type="number" id="nd-mg" value="18" min="5" max="80">
-    <div class="btn-row"><button class="btn btn-lime" onclick="confirmAddDose(${pi})">Toevoegen</button><button class="btn btn-ghost" onclick="closeModal()">Annuleer</button></div>`);
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="confirmAddDose(${pi})">Toevoegen</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Annuleer</button>
+    </div>`);
 }
 function confirmAddDose(pi){
   const t=document.getElementById('nd-t').value;
@@ -1075,86 +1235,133 @@ function confirmAddDose(pi){
   S.phases[pi].doses=S.phases[pi].doses||[];
   S.phases[pi].doses.push({time:t,type:document.getElementById('nd-tp').value,mg:+document.getElementById('nd-mg').value});
   S.phases[pi].doses.sort((a,b)=>t2m(a.time)-t2m(b.time));
-  save(); closeModal(); renderSchema();
+  persist(); closeModal(); renderSchema();
+  setTimeout(()=>askReinitAffectedDays(S.phases[pi].id,S.phases[pi].start,S.phases[pi].end,S.phases[pi].start,S.phases[pi].end),200);
 }
-
 function openEditDose(pi,di){
   const d=S.phases[pi].doses[di];
   openModal(`<div class="modal-handle"></div><div class="modal-title">Dosis bewerken</div>
     <div class="form-label">Tijdstip</div><input type="time" id="ed-t" value="${d.time}">
-    <div class="form-label">Type</div><select id="ed-tp"><option value="MR" ${d.type==='MR'?'selected':''}>MR</option><option value="IR" ${d.type==='IR'?'selected':''}>IR</option></select>
+    <div class="form-label">Type</div>
+    <select id="ed-tp"><option value="MR" ${d.type==='MR'?'selected':''}>MR</option><option value="IR" ${d.type==='IR'?'selected':''}>IR</option></select>
     <div class="form-label">mg</div><input type="number" id="ed-mg" value="${d.mg}" min="5" max="80">
-    <div class="btn-row"><button class="btn btn-lime" onclick="confirmEditDose(${pi},${di})">Opslaan</button><button class="btn btn-ghost" onclick="closeModal()">Annuleer</button></div>`);
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="confirmEditDose(${pi},${di})">Opslaan</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Annuleer</button>
+    </div>`);
 }
 function confirmEditDose(pi,di){
   const t=document.getElementById('ed-t').value;
   if(!t){toast('Tijdstip verplicht');return;}
   S.phases[pi].doses[di]={time:t,type:document.getElementById('ed-tp').value,mg:+document.getElementById('ed-mg').value};
   S.phases[pi].doses.sort((a,b)=>t2m(a.time)-t2m(b.time));
-  save(); closeModal(); renderSchema();
+  persist(); closeModal(); renderSchema();
 }
-function delDose(pi,di){ if(!confirm('Dosis verwijderen?'))return; S.phases[pi].doses.splice(di,1); save(); renderSchema(); }
+function delDose(pi,di){
+  if(!confirm('Dosis verwijderen uit sjabloon?'))return;
+  S.phases[pi].doses.splice(di,1); persist(); renderSchema();
+}
 
-/* ════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    HISTORY
-════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 function renderHistory(){
   const el=document.getElementById('pg-history');
-  const SE=['','😞','😐','🙂','😊','🤩'];
-  const entries=Object.entries(S.logs).filter(([,l])=>l.doses?.length>0||l.dayNote||l.reflection).sort((a,b)=>b[0].localeCompare(a[0]));
+  const today=todayStr();
+  const dateSet=new Set(Object.keys(S.logs));
+  for(let i=0;i<14;i++){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    dateSet.add(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()));
+  }
+  const dates=[...dateSet].sort((a,b)=>b.localeCompare(a));
+  const SE2=['','😞','😐','🙂','😊','🤩'];
 
-  if(entries.length===0){ el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Nog geen historiek.</div></div>`; return; }
+  let html=`<div class="btn-row" style="margin-bottom:4px">
+    <button class="btn btn-lime btn-sm" onclick="openRegisterPastDay()">📅 Dag registreren</button>
+  </div><div class="sec-label">Dagboek</div>`;
 
-  let html='<div class="sec-label">Dagboek</div>';
-  entries.forEach(([date,log])=>{
-    const snap=log.snap||S.settings;
-    const doses=log.doses||[];
-    const summary=doses.map(d=>`${d.time} ${d.taken===true?'✓':d.taken===false?'✗':'–'}${d.score?SE[d.score]:''}`).join(' · ');
+  dates.forEach(date=>{
+    const log=S.logs[date]||null;
+    const doses=log?.doses||[];
+    const hasData=doses.length>0||log?.dayNote||log?.reflection;
+    const isToday=date===today;
+    const summary=doses.length>0
+      ? doses.map(d=>`${d.time} ${d.taken===true?'✓':d.taken===false?'✗':'–'}${d.score?SE2[d.score]:''}`).join(' · ')
+      : (log?.dayNote?'📝 notitie':'leeg');
 
     const rows=doses.map((d,i)=>{
+      const snap=log?.snap||S.settings;
       const w=calcW(d.time,d.type,snap);
       return `<div class="he-row">
         <div class="he-time">${d.time}</div>
         <div class="he-detail">
           <span class="tag tag-${d.type.toLowerCase()}" style="margin-right:5px">${d.type} ${d.mg}mg</span>
-          ${d.taken===true?'<span style="color:var(--lime)">✓ genomen</span>':d.taken===false?'<span style="color:var(--pink)">✗ niet genomen</span>':'<span style="color:var(--txt3)">– onbekend</span>'}
-          ${d.score?` &nbsp; ${SE[d.score]}`:''}
+          ${d.taken===true?'<span style="color:var(--lime2)">✓</span>':d.taken===false?'<span style="color:var(--pink)">✗</span>':'<span style="color:var(--txt3)">–</span>'}
+          ${d.score?` ${SE2[d.score]}`:''}
           ${d.note?`<br>💬 ${esc(d.note)}`:''}
-          <br>Effect: ${m2t(w.start)}–${m2t(w.end)}
-          ${d.extra?'&nbsp;<span class="tag" style="background:var(--oranged);color:var(--orange);border:1px solid rgba(255,122,0,.2)">extra</span>':''}
+          ${d.extra?'<br><span class="tag tag-extra">extra</span>':''}
+          <br><span style="font-size:11px;color:var(--txt3)">Effect: ${m2t(w.start)}–${m2t(w.end)}</span>
         </div>
-        <div style="display:flex;gap:4px;flex-shrink:0">
-          <button class="btn-icon" onclick="openEditHist('${date}',${i})">✎</button>
-          <button class="btn-icon" onclick="delHist('${date}',${i})">✕</button>
-        </div>
+        <button class="btn-icon" onclick="openEditHistEntry('${date}',${i})">✎</button>
+        <button class="btn-icon" onclick="delHistEntry('${date}',${i})">✕</button>
       </div>`;
     }).join('');
 
-    const noteBlock=(log.dayNote||log.reflection)?`<div class="day-note-block">
-      ${log.dayNote?`<div><strong>Notitie</strong><br>${esc(log.dayNote)}</div>`:''}
-      ${log.reflection?`<div style="margin-top:${log.dayNote?'8px':'0'}"><strong>Reflectie</strong><br>${esc(log.reflection)}</div>`:''}
-    </div>`:'';
+    const notes=(log?.dayNote||log?.reflection)?`
+      ${log.dayNote?`<div class="day-notes-block"><div class="dnb-label">Dagnotitie</div>${esc(log.dayNote)}</div>`:''}
+      ${log.reflection?`<div class="day-notes-block"><div class="dnb-label">Reflectie</div>${esc(log.reflection)}</div>`:''}`:'' ;
 
     html+=`<div class="hist-day" id="hd-${date}">
       <div class="hd-header" onclick="toggleEl('hd-${date}')">
-        <div class="hd-date">${dutchShort(date)}</div>
-        <div class="hd-summary">${summary||'geen dosissen'}</div>
+        <div class="hd-date" ${isToday?'style="color:var(--lime2)"':''}>${isToday?'● ':''} ${dutchShort(date)}</div>
+        <div class="hd-summary">${summary}</div>
+        <button class="btn btn-ghost btn-sm" style="flex-shrink:0;padding:5px 10px;font-size:10px" onclick="event.stopPropagation();openDayModal('${date}')">✎ Bewerk</button>
         <span class="chev">▼</span>
       </div>
-      <div class="hd-body">${rows}${noteBlock}</div>
+      <div class="hd-body">
+        ${rows}${notes}
+        ${!hasData?`<div style="padding:10px 0;font-size:12px;color:var(--txt3)">Nog niets geregistreerd.</div>`:''}
+        <div class="btn-row" style="margin-top:8px">
+          <button class="btn btn-ghost btn-sm" onclick="openDayModal('${date}')">✎ Volledige dagregistratie</button>
+        </div>
+      </div>
     </div>`;
   });
 
   el.innerHTML=html;
 }
 
-function openEditHist(date,i){
-  const d=S.logs[date].doses[i];
-  const SE=['😞','😐','🙂','😊','🤩'];
+function openDayModal(ds){
+  openModal(`<div class="modal-handle"></div>
+    <div class="modal-title" style="font-size:15px">${dutchFull(ds)}</div>
+    <div id="day-modal-content"></div>`);
+  setTimeout(()=>{ const c=document.getElementById('day-modal-content'); if(c) renderDayPage(ds,'day-modal-content'); },50);
+}
+
+function openRegisterPastDay(){
+  openModal(`<div class="modal-handle"></div>
+    <div class="modal-title">Dag registreren</div>
+    <div class="form-label">Datum</div>
+    <input type="date" id="rpd-date" value="${todayStr()}" max="${todayStr()}">
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="confirmRegisterPastDay()">Openen</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Annuleer</button>
+    </div>`);
+}
+function confirmRegisterPastDay(){
+  const ds=document.getElementById('rpd-date').value;
+  if(!ds){toast('Kies een datum');return;}
+  closeModal(); setTimeout(()=>openDayModal(ds),100);
+}
+
+function openEditHistEntry(date,i){
+  const d=ensureLog(date).doses[i];
+  const SE2=['😞','😐','🙂','😊','🤩'];
   openModal(`<div class="modal-handle"></div><div class="modal-title">Entry bewerken</div>
-    <div style="font-size:12px;color:var(--txt2);margin-bottom:14px">${dutchFull(date)} — Dosis ${i+1}</div>
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:14px">${dutchMed(date)} — Dosis ${i+1}</div>
     <div class="form-label">Tijdstip</div><input type="time" id="eh-t" value="${d.time}">
-    <div class="form-label">Type</div><select id="eh-tp"><option value="MR" ${d.type==='MR'?'selected':''}>MR</option><option value="IR" ${d.type==='IR'?'selected':''}>IR</option></select>
+    <div class="form-label">Type</div>
+    <select id="eh-tp"><option value="MR" ${d.type==='MR'?'selected':''}>MR</option><option value="IR" ${d.type==='IR'?'selected':''}>IR</option></select>
     <div class="form-label">mg</div><input type="number" id="eh-mg" value="${d.mg}" min="5" max="80">
     <div class="form-label">Genomen?</div>
     <select id="eh-tk">
@@ -1165,17 +1372,17 @@ function openEditHist(date,i){
     <div class="form-label">Gevoel</div>
     <select id="eh-sc">
       <option value="0" ${!d.score?'selected':''}>–</option>
-      ${SE.map((e,n)=>`<option value="${n+1}" ${d.score===n+1?'selected':''}>${e} (${n+1})</option>`).join('')}
+      ${SE2.map((e,n)=>`<option value="${n+1}" ${d.score===n+1?'selected':''}>${e} (${n+1})</option>`).join('')}
     </select>
     <div class="form-label">Opmerking</div>
     <input type="text" id="eh-nt" value="${esc(d.note||'')}">
     <div class="btn-row">
-      <button class="btn btn-lime" onclick="confirmEditHist('${date}',${i})">Opslaan</button>
+      <button class="btn btn-lime" onclick="confirmEditHistEntry('${date}',${i})">Opslaan</button>
       <button class="btn btn-ghost" onclick="closeModal()">Annuleer</button>
     </div>`);
 }
-function confirmEditHist(date,i){
-  const d=S.logs[date].doses[i];
+function confirmEditHistEntry(date,i){
+  const d=ensureLog(date).doses[i];
   d.time=document.getElementById('eh-t').value;
   d.type=document.getElementById('eh-tp').value;
   d.mg=+document.getElementById('eh-mg').value;
@@ -1183,127 +1390,926 @@ function confirmEditHist(date,i){
   d.taken=tv==='null'?null:tv==='true';
   d.score=+document.getElementById('eh-sc').value;
   d.note=document.getElementById('eh-nt').value;
-  save(); closeModal(); renderHistory();
+  persist(); closeModal(); renderHistory();
 }
-function delHist(date,i){
+function delHistEntry(date,i){
   if(!confirm('Entry verwijderen?'))return;
   S.logs[date].doses.splice(i,1);
   if(!S.logs[date].doses.length&&!S.logs[date].dayNote&&!S.logs[date].reflection) delete S.logs[date];
-  save(); renderHistory();
+  persist(); renderHistory();
 }
 
-/* ════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    SETTINGS
-════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 function renderSettings(){
+  const mr=S.settings.mr, ir=S.settings.ir;
+  const mrHL=(halfLife('MR')*60).toFixed(0);
+  const irHL=(halfLife('IR')*60).toFixed(0);
+
   document.getElementById('pg-settings').innerHTML=`
     <div class="page-title">Instellingen</div>
-    <div class="page-sub">Werkingstijden op basis van jouw profiel</div>
+    <div class="page-sub">Werkingsprofiel · empirisch bijstellen op basis van ervaring</div>
 
-    <div class="info-box">
-      ℹ Wijzigingen gelden voor vandaag en de toekomst. Reeds gelogde dagen behouden hun eigen snapshot.
+    <div class="info-box">ℹ Wijzigingen gelden voor vandaag en de toekomst. Reeds gelogde dagen behouden hun eigen snapshot — historische tijdlijnen blijven kloppen.</div>
+
+    <div class="sblock">
+      <div class="sblock-title" style="color:var(--cyan)">💊 Rilatine MR</div>
+      <div class="sgrid">
+        <div class="sfield"><label>Aanlooptijd</label><div class="iu"><input type="number" id="mr-on" value="${mr.onset}" min="15" max="120" step="5" oninput="previewPK()"><span>min</span></div></div>
+        <div class="sfield"><label>Werkzame duur</label><div class="iu"><input type="number" id="mr-du" value="${mr.duration}" min="2" max="12" step="0.5" oninput="previewPK()"><span>uur</span></div></div>
+        <div class="sfield"><label>Vertraging 2e puls</label><div class="iu"><input type="number" id="mr-delay" value="${mr.delay||240}" min="120" max="360" step="30" oninput="previewPK()"><span>min</span></div></div>
+        <div class="sfield"><label>Direct vrijgave %</label><div class="iu"><input type="number" id="mr-split" value="${mr.split||50}" min="30" max="70" step="5" oninput="previewPK()"><span>%</span></div></div>
+      </div>
+      <div class="sfield-hint" style="margin-top:8px">→ Afgeleide halfwaardetijd: <strong id="mr-hl-preview">${mrHL} min</strong></div>
     </div>
 
     <div class="sblock">
-      <div class="sblock-title" style="color:var(--cyan)">Rilatine MR</div>
+      <div class="sblock-title" style="color:var(--orange)">💊 Rilatine IR</div>
       <div class="sgrid">
-        <div class="sfield"><label>Aanlooptijd</label><div class="iu"><input type="number" id="mr-on" value="${S.settings.mr.onset}" min="15" max="120" step="5"><span>min</span></div></div>
-        <div class="sfield"><label>Werkzame duur</label><div class="iu"><input type="number" id="mr-du" value="${S.settings.mr.duration}" min="2" max="12" step="0.5"><span>uur</span></div></div>
+        <div class="sfield"><label>Aanlooptijd</label><div class="iu"><input type="number" id="ir-on" value="${ir.onset}" min="10" max="60" step="5" oninput="previewPK()"><span>min</span></div></div>
+        <div class="sfield"><label>Werkzame duur</label><div class="iu"><input type="number" id="ir-du" value="${ir.duration}" min="1" max="6" step="0.5" oninput="previewPK()"><span>uur</span></div></div>
       </div>
+      <div class="sfield-hint" style="margin-top:8px">→ Afgeleide halfwaardetijd: <strong id="ir-hl-preview">${irHL} min</strong></div>
     </div>
 
     <div class="sblock">
-      <div class="sblock-title" style="color:var(--orange)">Rilatine IR</div>
-      <div class="sgrid">
-        <div class="sfield"><label>Aanlooptijd</label><div class="iu"><input type="number" id="ir-on" value="${S.settings.ir.onset}" min="10" max="60" step="5"><span>min</span></div></div>
-        <div class="sfield"><label>Werkzame duur</label><div class="iu"><input type="number" id="ir-du" value="${S.settings.ir.duration}" min="1" max="6" step="0.5"><span>uur</span></div></div>
-      </div>
+      <div class="sblock-title">📈 Live preview (MR 8u + IR 13u)</div>
+      <div class="chart-wrap"><canvas id="cv-pk-preview" width="600" height="180"></canvas></div>
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-lime" onclick="saveSettings()">Opslaan</button>
-      <button class="btn btn-ghost" onclick="resetSettings()">Standaard</button>
+      <button class="btn btn-lime" onclick="saveSettings()">✓ Opslaan</button>
+      <button class="btn btn-ghost" onclick="resetSettings()">↩ Standaard herstellen</button>
+    </div>
+
+    <div class="sec-label" style="margin-top:24px">Kalibratie-assistent</div>
+    <div class="sblock">
+      <div class="sblock-title">🔬 Empirisch bijstellen</div>
+      <p style="font-size:12px;color:var(--txt2);line-height:1.6;margin-bottom:12px">Vul in wat je voelt — de app berekent de parameters.</p>
+      <div class="form-label">Type</div>
+      <select id="cal-type" onchange="updateCalc()"><option value="MR">MR</option><option value="IR">IR</option></select>
+      <div class="form-label">Innaametijdstip</div>
+      <input type="time" id="cal-intake" value="08:00" oninput="updateCalc()">
+      <div class="form-row">
+        <div><div class="form-label">Eerste effect gevoeld om</div><input type="time" id="cal-start" value="09:00" oninput="updateCalc()"></div>
+        <div><div class="form-label">Effect uitgewerkt om</div><input type="time" id="cal-end" value="15:00" oninput="updateCalc()"></div>
+      </div>
+      <div id="cal-result" style="display:none;margin-top:10px;padding:10px 12px;background:var(--limed);border-radius:var(--rsm);font-size:12px;color:var(--lime2);line-height:1.8"></div>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn btn-ghost btn-sm" onclick="applyCalibration()">Toepassen op profiel</button>
+      </div>
     </div>
 
     <div class="sec-label" style="margin-top:24px">Data</div>
     <div class="sblock">
-      <div class="sblock-title">Export / import</div>
+      <div class="sblock-title">Backup & herstel</div>
       <div class="btn-row" style="margin-top:0">
         <button class="btn btn-ghost btn-sm" onclick="exportData()">↓ Export JSON</button>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('imp-file').click()">↑ Import JSON</button>
-        <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importData(this)">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('imp').click()">↑ Import JSON</button>
+        <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(this)">
       </div>
-    </div>
-  `;
+    </div>`;
+
+  setTimeout(()=>previewPK(), 80);
+}
+
+function previewPK(){
+  const mrOn  = +document.getElementById('mr-on')?.value    || 60;
+  const mrDu  = +document.getElementById('mr-du')?.value    || 6;
+  const mrDel = +document.getElementById('mr-delay')?.value || 240;
+  const mrSpl = +document.getElementById('mr-split')?.value || 50;
+  const irOn  = +document.getElementById('ir-on')?.value    || 30;
+  const irDu  = +document.getElementById('ir-du')?.value    || 4;
+
+  const mrHL=(mrDu*Math.LN2/Math.log(5)*60).toFixed(0);
+  const irHL=(irDu*Math.LN2/Math.log(5)*60).toFixed(0);
+  const mrEl=document.getElementById('mr-hl-preview'); if(mrEl) mrEl.textContent=mrHL+' min';
+  const irEl=document.getElementById('ir-hl-preview'); if(irEl) irEl.textContent=irHL+' min';
+
+  const snap={mr:{onset:mrOn,duration:mrDu,delay:mrDel,split:mrSpl}, ir:{onset:irOn,duration:irDu}};
+  const dummies=[{time:'08:00',type:'MR',mg:18},{time:'13:00',type:'IR',mg:10}];
+  drawPKChartDoses('cv-pk-preview', dummies, snap, -1);
+}
+
+let _calResult=null;
+function updateCalc(){
+  const intake=document.getElementById('cal-intake')?.value;
+  const start =document.getElementById('cal-start')?.value;
+  const end   =document.getElementById('cal-end')?.value;
+  const type  =document.getElementById('cal-type')?.value||'MR';
+  const el=document.getElementById('cal-result'); if(!el) return;
+  if(!intake||!start||!end){ el.style.display='none'; _calResult=null; return; }
+  const iM=t2m(intake), sM=t2m(start), eM=t2m(end);
+  if(sM<=iM||eM<=sM){ el.innerHTML='⚠ Tijdstip-volgorde klopt niet'; el.style.display='block'; _calResult=null; return; }
+  const onset=sM-iM;
+  const duration=(eM-sM)/60;
+  const t12=(duration*Math.LN2/Math.log(5)*60).toFixed(0);
+  _calResult={type,onset,duration};
+  el.style.display='block';
+  el.innerHTML=`<strong>Geschatte parameters (${type}):</strong><br>Aanlooptijd: <strong>${onset} min</strong><br>Werkzame duur: <strong>${duration.toFixed(1)} u</strong><br>Afgeleide halfwaardetijd: <strong>${t12} min</strong>`;
+}
+
+function applyCalibration(){
+  if(!_calResult){ toast('Vul eerst de kalibratie in'); return; }
+  const {type,onset,duration}=_calResult;
+  if(type==='MR'){
+    const a=document.getElementById('mr-on'); if(a) a.value=onset;
+    const b=document.getElementById('mr-du'); if(b) b.value=duration.toFixed(1);
+  } else {
+    const a=document.getElementById('ir-on'); if(a) a.value=onset;
+    const b=document.getElementById('ir-du'); if(b) b.value=duration.toFixed(1);
+  }
+  previewPK();
+  toast('✓ Toegepast — klik Opslaan om te bewaren');
 }
 
 function saveSettings(){
-  S.settings.mr.onset=+document.getElementById('mr-on').value;
-  S.settings.mr.duration=+document.getElementById('mr-du').value;
-  S.settings.ir.onset=+document.getElementById('ir-on').value;
-  S.settings.ir.duration=+document.getElementById('ir-du').value;
+  S.settings.mr={
+    onset:   +document.getElementById('mr-on').value,
+    duration:+document.getElementById('mr-du').value,
+    delay:   +document.getElementById('mr-delay').value,
+    split:   +document.getElementById('mr-split').value
+  };
+  S.settings.ir={
+    onset:   +document.getElementById('ir-on').value,
+    duration:+document.getElementById('ir-du').value
+  };
   const t=todayStr();
   if(S.logs[t]) S.logs[t].snap=JSON.parse(JSON.stringify(S.settings));
-  save(); toast('✓ Opgeslagen');
+  persist();
+  toast('✓ Instellingen opgeslagen');
+  if(curTab==='charts') renderCharts();
+  if(curTab==='today')  renderToday();
 }
 
 function resetSettings(){
-  S.settings={mr:{...DEFS.mr},ir:{...DEFS.ir}};
-  save(); renderSettings(); toast('↩ Standaard hersteld');
+  S.settings={mr:{...DEFS.mr,delay:240,split:50}, ir:{...DEFS.ir}};
+  persist(); renderSettings(); toast('↩ Standaard hersteld');
 }
 
 function exportData(){
-  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b);
   a.download=`pillr-backup-${todayStr()}.json`; a.click();
+  toast('✓ Backup gedownload');
 }
-
-function importData(input){
-  const file=input.files[0]; if(!file) return;
+function importData(inp){
+  const f=inp.files[0]; if(!f)return;
   const r=new FileReader();
   r.onload=e=>{
     try{
       const d=JSON.parse(e.target.result);
-      if(!d.settings||!d.phases) throw new Error('Ongeldig formaat');
-      S=d; save(); go('today'); toast('✓ Data geïmporteerd');
-    }catch(err){ toast('✗ Ongeldige data'); }
+      if(!d.settings||!Array.isArray(d.phases)) throw 0;
+      S=d; persist(); go('today'); toast('✓ Data geïmporteerd');
+    }catch{ toast('✗ Ongeldig bestand'); }
   };
-  r.readAsText(file);
+  r.readAsText(f);
 }
 
-/* ════════════════════════════════════════════════════════
-   MODAL
-════════════════════════════════════════════════════════ */
-function openModal(html){
-  document.getElementById('modal-box').innerHTML=html;
-  document.getElementById('modal-wrap').classList.add('show');
+/* ═══════════════════════════════════════════════════
+   PHARMACOKINETIC MODEL
+   MR = bimodal SODAS: configurable split% immediate + rest delayed
+   Empirical half-life: t½ = duration * ln2/ln5  (20% threshold)
+═══════════════════════════════════════════════════ */
+function halfLife(type, snap){
+  const s=snap||S.settings;
+  const dur=type==='MR'?s.mr.duration:s.ir.duration;
+  return dur*Math.LN2/Math.log(5); // hours
 }
+function lambdaFor(type,snap){ return Math.LN2/halfLife(type,snap); }
+
+// Bateman absorption pulse — returns concentration 0–1 (unnormalized)
+function irPulse(t_min, onsetMin, lambda, fraction){
+  const t=(t_min)/60, onset=onsetMin/60;
+  if(t<onset) return 0;
+  const te=t-onset, ka=3*lambda;
+  return Math.max(0, fraction*(Math.exp(-lambda*te)-Math.exp(-ka*te)));
+}
+
+// Peak of a single pulse (for normalization)
+function irPeakVal(onsetMin, lambda){
+  let peak=0;
+  for(let t=0;t<=720;t+=2){ const v=irPulse(t,onsetMin,lambda,1); if(v>peak) peak=v; }
+  return peak||1;
+}
+
+// Concentration points for one dose entry using a given snap
+function doseConcentrationCustom(dose, snap){
+  const s=snap||S.settings;
+  const cfg=dose.type==='MR'?s.mr:s.ir;
+  const intake=t2m(dose.time);
+  const lambda=lambdaFor(dose.type, s);
+  const onset=cfg.onset;
+  const pts=[];
+  for(let t=300;t<=1440;t+=5){
+    const dt=t-intake;
+    let c=0;
+    if(dose.type==='MR'){
+      const delay=cfg.delay||240;
+      const split=(cfg.split||50)/100;
+      const norm1=irPeakVal(onset,lambda);
+      const norm2=irPeakVal(onset,lambda);
+      c+=irPulse(dt,onset,lambda,split)/norm1;
+      c+=irPulse(dt,onset+delay,lambda,1-split)/norm2;
+    } else {
+      const norm=irPeakVal(onset,lambda);
+      c+=irPulse(dt,onset,lambda,1)/norm;
+    }
+    pts.push({t,c:Math.max(0,c)});
+  }
+  return pts;
+}
+
+// Alias for backward compatibility
+function doseConcentration(dose, snap){ return doseConcentrationCustom(dose, snap); }
+
+// Total normalized concentration for a day
+function dayConcentration(ds){
+  const log=getLog(ds);
+  if(!log||!log.doses||log.doses.length===0) return [];
+  const snap=log.snap||S.settings;
+  const active=log.doses.filter(d=>d.taken!==false);
+  if(!active.length) return [];
+  const pts=[];
+  for(let t=300;t<=1440;t+=5){
+    let total=0;
+    active.forEach(dose=>{
+      const dc=doseConcentrationCustom(dose,snap);
+      const pt=dc.find(p=>p.t===t);
+      if(pt) total+=pt.c;
+    });
+    pts.push({t,c:total});
+  }
+  const peak=Math.max(...pts.map(p=>p.c),0.001);
+  return pts.map(p=>({t:p.t,c:p.c/peak,raw:p.c}));
+}
+
+// Unified PK chart renderer — works for both today-page and settings preview
+// nm=-1 means don't draw NOW line
+function drawPKChartDoses(canvasId, doses, snap, nm){
+  const canvas=document.getElementById(canvasId); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const PAD={top:20,right:14,bottom:36,left:44};
+  const cw=W-PAD.left-PAD.right,ch=H-PAD.top-PAD.bottom;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+
+  const tMin=300,tMax=1440,tRange=tMax-tMin;
+  const tx=t=>PAD.left+(t-tMin)/tRange*cw;
+  const cy2=v=>PAD.top+(1-Math.max(0,Math.min(1,v)))*ch;
+  const COLS=['#00e000','#00b8d9','#ff6b00','#ff2060','#7c3aed'];
+
+  // Grid + hour labels
+  ctx.strokeStyle='rgba(0,0,0,.06)'; ctx.lineWidth=1;
+  for(let h=6;h<=24;h+=2){
+    const x=tx(h*60);
+    ctx.beginPath(); ctx.moveTo(x,PAD.top); ctx.lineTo(x,PAD.top+ch); ctx.stroke();
+    ctx.fillStyle='#a0a0b8'; ctx.font='9px monospace'; ctx.textAlign='center';
+    ctx.fillText(h===24?'0u':`${h}u`, x, PAD.top+ch+14);
+  }
+  // Y axis
+  ctx.textAlign='right';
+  [0,.25,.5,.75,1].forEach(v=>{
+    const y=cy2(v);
+    ctx.strokeStyle='rgba(0,0,0,.06)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(PAD.left+cw,y); ctx.stroke();
+    ctx.fillStyle='#a0a0b8'; ctx.font='9px monospace';
+    ctx.fillText(Math.round(v*100)+'%', PAD.left-4, y+3);
+  });
+
+  // 20% threshold
+  ctx.strokeStyle='rgba(255,107,0,.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(PAD.left,cy2(.2)); ctx.lineTo(PAD.left+cw,cy2(.2)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,107,0,.7)'; ctx.font='8px monospace'; ctx.textAlign='left';
+  ctx.fillText('20% drempel', PAD.left+4, cy2(.2)-3);
+
+  // Compute total curve
+  const activeDoses=(doses||[]).filter(d=>d.taken!==false);
+  const pts=[];
+  for(let t=tMin;t<=tMax;t+=5){
+    let tot=0;
+    activeDoses.forEach(dose=>{
+      const dc=doseConcentrationCustom(dose,snap);
+      const pt=dc.find(p=>p.t===t);
+      if(pt) tot+=pt.c;
+    });
+    pts.push({t,c:tot});
+  }
+  const peak=Math.max(...pts.map(p=>p.c),0.001);
+
+  // Individual dose curves (faint)
+  activeDoses.forEach((dose,i)=>{
+    const dc=doseConcentrationCustom(dose,snap);
+    ctx.strokeStyle=COLS[i%COLS.length]; ctx.lineWidth=1.5; ctx.globalAlpha=0.3;
+    ctx.beginPath();
+    dc.forEach((p,j)=>{ const x=tx(p.t),y=cy2(p.c/peak); j===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+    ctx.stroke(); ctx.globalAlpha=1;
+  });
+
+  // Total curve — filled
+  if(pts.length>0){
+    const grad=ctx.createLinearGradient(0,PAD.top,0,PAD.top+ch);
+    grad.addColorStop(0,'rgba(0,224,0,.22)'); grad.addColorStop(1,'rgba(0,224,0,.03)');
+    ctx.beginPath();
+    ctx.moveTo(tx(pts[0].t),cy2(0));
+    pts.forEach(p=>ctx.lineTo(tx(p.t),cy2(p.c/peak)));
+    ctx.lineTo(tx(pts[pts.length-1].t),cy2(0));
+    ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+    ctx.strokeStyle='#00b800'; ctx.lineWidth=2.5;
+    ctx.beginPath();
+    pts.forEach((p,j)=>{ const x=tx(p.t),y=cy2(p.c/peak); j===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+    ctx.stroke();
+  }
+
+  // Dose intake markers + labels
+  activeDoses.forEach((dose,i)=>{
+    const x=tx(t2m(dose.time));
+    ctx.fillStyle=COLS[i%COLS.length];
+    ctx.beginPath(); ctx.arc(x,PAD.top+ch,5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#0a0a14'; ctx.font='bold 9px monospace'; ctx.textAlign='center';
+    ctx.fillText(dose.time, x, PAD.top+ch+26);
+  });
+
+  // NOW line
+  if(nm>=tMin&&nm<=tMax){
+    ctx.strokeStyle='rgba(10,10,20,.5)'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(tx(nm),PAD.top); ctx.lineTo(tx(nm),PAD.top+ch); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#0a0a14'; ctx.font='bold 8px monospace'; ctx.textAlign='center';
+    ctx.fillText('NU', tx(nm), PAD.top-4);
+  }
+}
+
+// Wrapper used by charts page for today
+function drawPKChart(canvasId, ds){
+  const log=getLog(ds);
+  if(!log||!log.doses?.length){ return; }
+  const snap=log.snap||S.settings;
+  const nm=ds===todayStr()?nowMin():-1;
+  drawPKChartDoses(canvasId, log.doses, snap, nm);
+}
+
+function drawLineChart(canvasId, dates, dataFn, label, color){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const PAD={top:16,right:16,bottom:40,left:36};
+  const cw=W-PAD.left-PAD.right, ch=H-PAD.top-PAD.bottom;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+
+  const vals = dates.map(d=>dataFn(d));
+  const validVals = vals.filter(v=>v!==null);
+  if(validVals.length===0){ ctx.fillStyle='#a0a0b8'; ctx.font='12px monospace'; ctx.textAlign='center'; ctx.fillText('Geen data', W/2, H/2); return; }
+
+  const vMax = Math.max(...validVals, 1);
+  const vMin = Math.min(...validVals, 0);
+  const vRange = vMax - vMin || 1;
+
+  const px = (i) => PAD.left + i/(dates.length-1||1)*cw;
+  const py = (v) => PAD.top + (1-(v-vMin)/vRange)*ch;
+
+  // Grid
+  ctx.strokeStyle='rgba(0,0,0,.06)'; ctx.lineWidth=1;
+  [0,.25,.5,.75,1].forEach(f=>{
+    const v = vMin + f*vRange;
+    const y = py(v);
+    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(PAD.left+cw,y); ctx.stroke();
+    ctx.fillStyle='#a0a0b8'; ctx.font='9px monospace'; ctx.textAlign='right';
+    ctx.fillText(Math.round(v*10)/10, PAD.left-4, y+3);
+  });
+
+  // X labels (every 2nd)
+  dates.forEach((d,i)=>{
+    if(i%2===0||dates.length<=7){
+      ctx.fillStyle='#a0a0b8'; ctx.font='8px monospace'; ctx.textAlign='center';
+      const lbl = new Date(d+'T12:00:00').toLocaleDateString('nl-BE',{day:'numeric',month:'short'});
+      ctx.fillText(lbl, px(i), PAD.top+ch+22);
+    }
+  });
+
+  // Line + fill
+  const grad = ctx.createLinearGradient(0,PAD.top,0,PAD.top+ch);
+  grad.addColorStop(0, color+'33'); grad.addColorStop(1, color+'08');
+
+  ctx.beginPath();
+  let started=false;
+  dates.forEach((d,i)=>{ if(vals[i]===null) return; if(!started){ctx.moveTo(px(i),py(vals[i]));started=true;}else ctx.lineTo(px(i),py(vals[i])); });
+  const last=dates.reduce((a,d,i)=>vals[i]!==null?i:a,-1);
+  const first=dates.findIndex((_,i)=>vals[i]!==null);
+  if(first>=0&&last>=0){ ctx.lineTo(px(last),PAD.top+ch); ctx.lineTo(px(first),PAD.top+ch); ctx.closePath(); ctx.fillStyle=grad; ctx.fill(); }
+
+  ctx.strokeStyle=color; ctx.lineWidth=2.5;
+  ctx.beginPath(); started=false;
+  dates.forEach((d,i)=>{ if(vals[i]===null) return; if(!started){ctx.moveTo(px(i),py(vals[i]));started=true;}else ctx.lineTo(px(i),py(vals[i])); });
+  ctx.stroke();
+
+  // Dots
+  dates.forEach((d,i)=>{ if(vals[i]===null) return; ctx.fillStyle=color; ctx.beginPath(); ctx.arc(px(i),py(vals[i]),3.5,0,Math.PI*2); ctx.fill(); });
+}
+
+function drawBarChart(canvasId, labels, values, color){
+  const canvas=document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const PAD={top:16,right:16,bottom:32,left:36};
+  const cw=W-PAD.left-PAD.right,ch=H-PAD.top-PAD.bottom;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+
+  const vMax=Math.max(...values,1);
+  const barW=cw/labels.length*0.6;
+  const gap=cw/labels.length;
+
+  [0,.5,1].forEach(f=>{
+    const y=PAD.top+(1-f)*ch;
+    ctx.strokeStyle='rgba(0,0,0,.06)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(PAD.left+cw,y); ctx.stroke();
+    ctx.fillStyle='#a0a0b8'; ctx.font='9px monospace'; ctx.textAlign='right';
+    ctx.fillText(Math.round(f*vMax), PAD.left-4, y+3);
+  });
+
+  labels.forEach((l,i)=>{
+    const x=PAD.left+gap*i+gap/2;
+    const bh=values[i]/vMax*ch;
+    const grad=ctx.createLinearGradient(0,PAD.top+ch-bh,0,PAD.top+ch);
+    grad.addColorStop(0,color); grad.addColorStop(1,color+'88');
+    ctx.fillStyle=grad;
+    ctx.beginPath(); ctx.roundRect(x-barW/2,PAD.top+ch-bh,barW,bh,3); ctx.fill();
+    ctx.fillStyle='#606078'; ctx.font='9px monospace'; ctx.textAlign='center';
+    ctx.fillText(l, x, PAD.top+ch+18);
+    if(values[i]>0){ ctx.fillStyle='#0a0a14'; ctx.font='bold 9px monospace'; ctx.fillText(Math.round(values[i]*10)/10, x, PAD.top+ch-bh-4); }
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   CHARTS PAGE
+═══════════════════════════════════════════════════ */
+// Which charts are enabled — persisted in settings
+const ALL_CHARTS = [
+  {id:'pk',      label:'Plasmaconcentratie vandaag',      dflt:true},
+  {id:'score',   label:'Gevoel over tijd',                dflt:true},
+  {id:'taken',   label:'Inname per week',                 dflt:true},
+  {id:'overlap', label:'Overlap-minuten per dag',         dflt:false},
+  {id:'dosecomp',label:'1e vs 2e dosis vergelijking',     dflt:false},
+  {id:'weekpat', label:'Weekpatroon (gem. per weekdag)',   dflt:true},
+];
+
+function chartEnabled(id){ return S.settings.charts?.[id] ?? ALL_CHARTS.find(c=>c.id===id)?.dflt ?? true; }
+function toggleChart(id){ if(!S.settings.charts) S.settings.charts={}; S.settings.charts[id]=!chartEnabled(id); persist(); renderCharts(); }
+
+function renderCharts(){
+  const el=document.getElementById('pg-charts');
+  const today=todayStr();
+
+  // Build 14-day date range
+  const dates=[];
+  for(let i=13;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); dates.push(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())); }
+
+  // Toggle buttons
+  const toggles = ALL_CHARTS.map(c=>`
+    <button class="chart-toggle ${chartEnabled(c.id)?'on':''}" onclick="toggleChart('${c.id}')">
+      ${chartEnabled(c.id)?'✓ ':''} ${c.label}
+    </button>`).join('');
+
+  let html=`
+    <div class="page-title">Grafieken</div>
+    <div class="page-sub">14 dagen · klik om te tonen/verbergen</div>
+    <div class="chart-toggles">${toggles}</div>`;
+
+  // ── 1. PLASMA CONCENTRATION (today) ──
+  if(chartEnabled('pk')){
+    html+=`<div class="chart-card">
+      <div class="chart-title">💊 Plasmaconcentratie — vandaag</div>
+      <div class="chart-sub">Bimodaal MR-model (SODAS 50/50) · drempel 20% = uitgewerkt · individuele doses gestippeld</div>
+      <div class="chart-wrap"><canvas id="cv-pk" width="680" height="220"></canvas></div>
+      <div style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.6">
+        Berekend op basis van jouw werkingsprofiel: MR t½ = ${(halfLife('MR')*60).toFixed(0)} min · IR t½ = ${(halfLife('IR')*60).toFixed(0)} min
+      </div>
+    </div>`;
+  }
+
+  // ── 2. SCORE OVER TIME ──
+  if(chartEnabled('score')){
+    html+=`<div class="chart-card">
+      <div class="chart-title">😊 Gevoel over tijd</div>
+      <div class="chart-sub">Gemiddelde score per dag (1–5)</div>
+      <div class="chart-wrap"><canvas id="cv-score" width="680" height="180"></canvas></div>
+    </div>`;
+  }
+
+  // ── 3. TAKEN PER WEEK ──
+  if(chartEnabled('taken')){
+    html+=`<div class="chart-card">
+      <div class="chart-title">✓ Inname compliantie — 14 dagen</div>
+      <div class="chart-sub">Genomen / niet genomen / onbekend per dag</div>
+      <div class="chart-wrap"><canvas id="cv-taken" width="680" height="160"></canvas></div>
+    </div>`;
+  }
+
+  // ── 4. OVERLAP ──
+  if(chartEnabled('overlap')){
+    html+=`<div class="chart-card">
+      <div class="chart-title">⚠ Overlap-minuten per dag</div>
+      <div class="chart-sub">Totale overlaptijd tussen opeenvolgende dosissen</div>
+      <div class="chart-wrap"><canvas id="cv-overlap" width="680" height="160"></canvas></div>
+    </div>`;
+  }
+
+  // ── 5. DOSE COMPARISON ──
+  if(chartEnabled('dosecomp')){
+    html+=`<div class="chart-card">
+      <div class="chart-title">📊 1e vs 2e dosis — gemiddelde score</div>
+      <div class="chart-sub">Vergelijking gemiddeld gevoel per dosis-slot</div>
+      <div class="chart-wrap"><canvas id="cv-dosecomp" width="680" height="180"></canvas></div>
+    </div>`;
+  }
+
+  // ── 6. WEEK PATTERN ──
+  if(chartEnabled('weekpat')){
+    html+=`<div class="chart-card">
+      <div class="chart-title">📅 Weekpatroon</div>
+      <div class="chart-sub">Gemiddeld gevoel per weekdag (alle data)</div>
+      <div class="chart-wrap"><canvas id="cv-weekpat" width="680" height="180"></canvas></div>
+    </div>`;
+  }
+
+  el.innerHTML=html;
+
+  // Render canvases after DOM update
+  requestAnimationFrame(()=>{
+    scaleCanvases();
+
+    if(chartEnabled('pk')) drawPKChart('cv-pk', today);
+
+    if(chartEnabled('score')){
+      drawLineChart('cv-score', dates,
+        d=>{ const l=getLog(d); if(!l||!l.doses?.length) return null; const sc=l.doses.filter(x=>x.score>0).map(x=>x.score); return sc.length?sc.reduce((a,b)=>a+b)/sc.length:null; },
+        'Gem. score', '#00b8d9');
+    }
+
+    if(chartEnabled('taken')){
+      drawTakenChart('cv-taken', dates);
+    }
+
+    if(chartEnabled('overlap')){
+      const olabels=dates.map(d=>new Date(d+'T12:00:00').toLocaleDateString('nl-BE',{day:'numeric',month:'short'}));
+      const ovals=dates.map(d=>{
+        const l=getLog(d); if(!l||!l.doses?.length) return 0;
+        const snap=l.snap||S.settings;
+        const ds2=l.doses.filter(x=>x.taken!==false).map(x=>({...x,...calcW(x.time,x.type,snap)}));
+        let ov=0; for(let i=0;i<ds2.length-1;i++) if(ds2[i+1].start<ds2[i].end) ov+=ds2[i].end-ds2[i+1].start;
+        return ov;
+      });
+      drawBarChart('cv-overlap', olabels, ovals, '#ff6b00');
+    }
+
+    if(chartEnabled('dosecomp')){
+      drawDoseCompChart('cv-dosecomp');
+    }
+
+    if(chartEnabled('weekpat')){
+      drawWeekPatChart('cv-weekpat');
+    }
+  });
+}
+
+function scaleCanvases(){
+  // Make canvases crisp on high-DPI screens
+  document.querySelectorAll('#pg-charts canvas').forEach(c=>{
+    const rect=c.parentElement.getBoundingClientRect();
+    const dpr=window.devicePixelRatio||1;
+    const w=rect.width||340;
+    c.width=w*dpr; c.height=c.height*dpr/c.height*(c.height||220);
+    // simpler: just set display width
+    c.style.width='100%';
+    // reset to logical size
+    const logH=parseInt(c.getAttribute('height')||220);
+    const logW=parseInt(c.getAttribute('width')||680);
+    c.width=logW; c.height=logH;
+  });
+}
+
+function drawTakenChart(canvasId, dates){
+  const canvas=document.getElementById(canvasId); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const PAD={top:16,right:16,bottom:32,left:36};
+  const cw=W-PAD.left-PAD.right,ch=H-PAD.top-PAD.bottom;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+
+  const gap=cw/dates.length;
+  const barW=gap*0.7;
+
+  dates.forEach((d,i)=>{
+    const l=getLog(d);
+    const doses=l?.doses||[];
+    const total=doses.length;
+    const taken=doses.filter(x=>x.taken===true).length;
+    const notTaken=doses.filter(x=>x.taken===false).length;
+    const unknown=total-taken-notTaken;
+
+    const x=PAD.left+gap*i+gap/2-barW/2;
+    let y=PAD.top+ch;
+
+    // Stack: taken (lime), unknown (gray), not-taken (pink)
+    if(total===0){
+      ctx.fillStyle='rgba(0,0,0,.05)';
+      ctx.beginPath(); ctx.roundRect(x,PAD.top+ch-4,barW,4,2); ctx.fill();
+    } else {
+      const segH=ch/Math.max(total,1);
+      [[taken,'#00e000'],[unknown,'#d0d0e0'],[notTaken,'#ff2060']].forEach(([n,col])=>{
+        if(n===0) return;
+        const bh=segH*n;
+        ctx.fillStyle=col; ctx.beginPath(); ctx.roundRect(x,y-bh,barW,bh,2); ctx.fill();
+        y-=bh;
+      });
+    }
+
+    if(i%2===0||dates.length<=7){
+      const lbl=new Date(d+'T12:00:00').toLocaleDateString('nl-BE',{day:'numeric',month:'short'});
+      ctx.fillStyle='#a0a0b8'; ctx.font='8px monospace'; ctx.textAlign='center';
+      ctx.fillText(lbl, PAD.left+gap*i+gap/2, PAD.top+ch+18);
+    }
+  });
+
+  // Legend
+  [['Genomen','#00e000'],['Onbekend','#d0d0e0'],['Niet','#ff2060']].forEach(([l,c],i)=>{
+    ctx.fillStyle=c; ctx.fillRect(PAD.left+i*80, PAD.top-2, 10, 10);
+    ctx.fillStyle='#606078'; ctx.font='9px monospace'; ctx.textAlign='left';
+    ctx.fillText(l, PAD.left+i*80+14, PAD.top+8);
+  });
+}
+
+function drawDoseCompChart(canvasId){
+  // Average score per dose slot (1st dose, 2nd dose, 3rd dose)
+  const slotScores=[[], [], []];
+  Object.values(S.logs).forEach(l=>{
+    if(!l.doses) return;
+    l.doses.forEach((d,i)=>{ if(i<3&&d.score>0) slotScores[i].push(d.score); });
+  });
+  const labels=['1e dosis','2e dosis','3e dosis'];
+  const vals=slotScores.map(a=>a.length?a.reduce((x,y)=>x+y)/a.length:0);
+  drawBarChart(canvasId, labels, vals, '#7c3aed');
+}
+
+function drawWeekPatChart(canvasId){
+  const byDay=[[],[],[],[],[],[],[]]; // 0=sun
+  Object.entries(S.logs).forEach(([ds,l])=>{
+    if(!l.doses) return;
+    const dow=new Date(ds+'T12:00:00').getDay();
+    const scores=l.doses.filter(d=>d.score>0).map(d=>d.score);
+    if(scores.length) byDay[dow].push(scores.reduce((a,b)=>a+b)/scores.length);
+  });
+  const labels=['Zo','Ma','Di','Wo','Do','Vr','Za'];
+  const vals=byDay.map(a=>a.length?a.reduce((x,y)=>x+y)/a.length:0);
+  drawBarChart(canvasId, labels, vals, '#00b8d9');
+}
+
+/* ═══════════════════════════════════════════════════
+   REPORT PAGE
+═══════════════════════════════════════════════════ */
+function renderReport(){
+  const el=document.getElementById('pg-report');
+  const today=todayStr();
+  // Default: last 7 days
+  const dates=[];
+  for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); dates.push(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())); }
+  const from=dates[0], to=dates[dates.length-1];
+
+  el.innerHTML=`
+    <div class="page-title">Rapport</div>
+    <div class="page-sub">PDF exporteren voor je neuroloog · CSV voor data-analyse</div>
+
+    <div class="card card-pad" style="margin-bottom:14px">
+      <div class="card-title">📅 Periode</div>
+      <div class="form-row">
+        <div><div class="form-label">Van</div><input type="date" id="rp-from" value="${from}" max="${today}"></div>
+        <div><div class="form-label">Tot</div><input type="date" id="rp-to" value="${to}" max="${today}"></div>
+      </div>
+      <div class="form-label">Naam patiënt (optioneel)</div>
+      <input type="text" id="rp-name" placeholder="Jouw naam voor het rapport..." value="${S.settings.patientName||''}">
+    </div>
+
+    <div class="sec-label">Exporteren</div>
+    <div class="btn-row">
+      <button class="btn btn-lime" onclick="exportPDF()">📄 PDF rapport</button>
+      <button class="btn btn-ghost" onclick="exportCSV()">📊 CSV export</button>
+      <button class="btn btn-ghost" onclick="shareViaEmail()">✉️ Via mail versturen</button>
+    </div>
+
+    <div class="sec-label" style="margin-top:20px">Voorvertoning</div>
+    <div id="report-preview" style="background:var(--white);border:1px solid var(--brd);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)"></div>`;
+
+  // Auto-render preview
+  setTimeout(()=>updateReportPreview(), 50);
+
+  // Live update on date change
+  document.getElementById('rp-from').addEventListener('change', updateReportPreview);
+  document.getElementById('rp-to').addEventListener('change', updateReportPreview);
+  document.getElementById('rp-name').addEventListener('input', e=>{ S.settings.patientName=e.target.value; persist(); });
+}
+
+function getReportDates(){
+  const from=document.getElementById('rp-from')?.value;
+  const to=document.getElementById('rp-to')?.value;
+  if(!from||!to) return [];
+  const dates=[], d=new Date(from+'T12:00:00'), end=new Date(to+'T12:00:00');
+  while(d<=end){ dates.push(d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())); d.setDate(d.getDate()+1); }
+  return dates;
+}
+
+function updateReportPreview(){
+  const dates=getReportDates();
+  const el=document.getElementById('report-preview'); if(!el) return;
+  const SE=['','😞','😐','🙂','😊','🤩'];
+
+  let html=`<div style="font-family:'Syne',sans-serif">
+    <div style="font-size:10px;color:#a0a0b8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Pillr — Medicatierapport</div>
+    <div style="font-size:18px;font-weight:800;letter-spacing:-1px;margin-bottom:2px">${S.settings.patientName||'Patiënt'}</div>
+    <div style="font-size:11px;color:#606078;margin-bottom:16px">Periode: ${dutchShort(dates[0]||'')} – ${dutchShort(dates[dates.length-1]||'')}</div>`;
+
+  // Summary stats
+  const allDoses=dates.flatMap(d=>getLog(d)?.doses||[]);
+  const taken=allDoses.filter(d=>d.taken===true).length;
+  const notTaken=allDoses.filter(d=>d.taken===false).length;
+  const scored=allDoses.filter(d=>d.score>0);
+  const avgScore=scored.length?scored.reduce((a,b)=>a+b.score,0)/scored.length:null;
+  const compliance=allDoses.length?Math.round(taken/allDoses.length*100):null;
+
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+    ${[
+      ['Compliantie', compliance!==null?compliance+'%':'–', '#00e000'],
+      ['Gem. gevoel', avgScore?avgScore.toFixed(1)+'/5 '+SE[Math.round(avgScore)]:'–', '#00b8d9'],
+      ['Dosissen', `${taken}✓ ${notTaken}✗`, '#606078']
+    ].map(([l,v,c])=>`<div style="background:#f5f5f7;border-radius:10px;padding:10px;text-align:center">
+      <div style="font-size:10px;color:#a0a0b8;letter-spacing:.08em;text-transform:uppercase">${l}</div>
+      <div style="font-size:18px;font-weight:800;color:${c};letter-spacing:-1px;margin-top:2px">${v}</div>
+    </div>`).join('')}
+  </div>`;
+
+  // Per-day table
+  html+=`<table style="width:100%;border-collapse:collapse;font-size:11px">
+    <tr style="border-bottom:2px solid #e8e8ee">
+      <th style="text-align:left;padding:5px 4px;color:#a0a0b8;font-size:9px;letter-spacing:.08em;text-transform:uppercase">Datum</th>
+      <th style="text-align:left;padding:5px 4px;color:#a0a0b8;font-size:9px;letter-spacing:.08em;text-transform:uppercase">Dosissen</th>
+      <th style="text-align:center;padding:5px 4px;color:#a0a0b8;font-size:9px;letter-spacing:.08em;text-transform:uppercase">Gevoel</th>
+      <th style="text-align:left;padding:5px 4px;color:#a0a0b8;font-size:9px;letter-spacing:.08em;text-transform:uppercase">Notities</th>
+    </tr>`;
+
+  dates.forEach(d=>{
+    const l=getLog(d);
+    const doses=l?.doses||[];
+    const sc=doses.filter(x=>x.score>0);
+    const avg=sc.length?sc.reduce((a,b)=>a+b.score,0)/sc.length:null;
+    const doseStr=doses.map(x=>`${x.time} ${x.mg}mg ${x.type} ${x.taken===true?'✓':x.taken===false?'✗':'–'}`).join('<br>');
+    const notes=[l?.dayNote, l?.reflection, ...doses.map(x=>x.note)].filter(Boolean).join(' / ');
+    html+=`<tr style="border-bottom:1px solid #f0f0f4">
+      <td style="padding:5px 4px;white-space:nowrap;color:#0a0a14;font-weight:600">${dutchShort(d)}</td>
+      <td style="padding:5px 4px;color:#606078">${doseStr||'–'}</td>
+      <td style="padding:5px 4px;text-align:center">${avg?SE[Math.round(avg)]:'–'}</td>
+      <td style="padding:5px 4px;color:#606078;font-size:10px;max-width:120px;word-break:break-word">${notes||''}</td>
+    </tr>`;
+  });
+
+  html+=`</table></div>`;
+  el.innerHTML=html;
+}
+
+function exportCSV(){
+  const dates=getReportDates();
+  const rows=[['Datum','Tijdstip','Type','mg','Genomen','Score','Notitie','Dagnotitie','Reflectie']];
+  dates.forEach(d=>{
+    const l=getLog(d);
+    const doses=l?.doses||[];
+    if(doses.length===0){
+      rows.push([d,'','','','','',l?.dayNote||'',l?.reflection||'']);
+    } else {
+      doses.forEach((dose,i)=>{
+        rows.push([d, dose.time, dose.type, dose.mg,
+          dose.taken===true?'ja':dose.taken===false?'nee':'onbekend',
+          dose.score||'',
+          dose.note||'',
+          i===0?l?.dayNote||'':'',
+          i===0?l?.reflection||'':''
+        ]);
+      });
+    }
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  const from=document.getElementById('rp-from')?.value||todayStr();
+  const to=document.getElementById('rp-to')?.value||todayStr();
+  a.download=`pillr-${from}-${to}.csv`; a.click();
+  toast('✓ CSV gedownload');
+}
+
+function exportPDF(){
+  updateReportPreview();
+  const preview=document.getElementById('report-preview');
+  if(!preview){ toast('Geen preview'); return; }
+
+  const name=S.settings.patientName||'Patiënt';
+  const from=document.getElementById('rp-from')?.value||todayStr();
+  const to=document.getElementById('rp-to')?.value||todayStr();
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <title>Pillr Rapport — ${name}</title>
+    <style>
+      body{font-family:system-ui,sans-serif;padding:32px;max-width:800px;margin:0 auto;color:#0a0a14;font-size:13px}
+      @media print{body{padding:16px}}
+      h1{font-size:22px;font-weight:800;letter-spacing:-1px;margin-bottom:4px}
+      .sub{color:#606078;font-size:12px;margin-bottom:20px}
+      table{width:100%;border-collapse:collapse;margin-top:16px}
+      th,td{padding:6px 8px;border-bottom:1px solid #e8e8ee;text-align:left}
+      th{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#a0a0b8;border-bottom:2px solid #e8e8ee}
+      .stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+      .stat{background:#f5f5f7;border-radius:10px;padding:12px;text-align:center}
+      .stat-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#a0a0b8}
+      .stat-value{font-size:20px;font-weight:800;margin-top:2px}
+      .footer{margin-top:24px;font-size:10px;color:#a0a0b8;border-top:1px solid #e8e8ee;padding-top:12px}
+    </style></head><body>
+    <div style="font-size:10px;color:#a0a0b8;letter-spacing:.1em;text-transform:uppercase">Pillr — Medicatierapport</div>
+    <h1>${name}</h1>
+    <div class="sub">Periode: ${from} – ${to} · Gegenereerd op ${new Date().toLocaleDateString('nl-BE')}</div>
+    ${preview.innerHTML}
+    <div class="footer">Gegenereerd door Pillr · Rilatine titratie & dagboek · Vertrouwelijk medisch document</div>
+    </body></html>`);
+  win.document.close();
+  setTimeout(()=>win.print(), 400);
+  toast('✓ PDF venster geopend');
+}
+
+function shareViaEmail(){
+  updateReportPreview();
+  const name=S.settings.patientName||'Patiënt';
+  const from=document.getElementById('rp-from')?.value||todayStr();
+  const to=document.getElementById('rp-to')?.value||todayStr();
+
+  // Build plain-text version
+  const dates=getReportDates();
+  const SE=['','😞','😐','🙂','😊','🤩'];
+  let body=`Pillr Medicatierapport\n`;
+  body+=`Patiënt: ${name}\nPeriode: ${from} – ${to}\n`;
+  body+=`Gegenereerd: ${new Date().toLocaleDateString('nl-BE')}\n\n`;
+  body+=`=== DAGREGISTRATIE ===\n\n`;
+
+  dates.forEach(d=>{
+    const l=getLog(d);
+    const doses=l?.doses||[];
+    body+=`${dutchShort(d)}\n`;
+    if(doses.length){
+      doses.forEach(dose=>{
+        body+=`  ${dose.time} · ${dose.mg}mg ${dose.type} · ${dose.taken===true?'Genomen':dose.taken===false?'Niet genomen':'Onbekend'}`;
+        if(dose.score) body+=` · Gevoel: ${SE[dose.score]} (${dose.score}/5)`;
+        if(dose.note) body+=` · ${dose.note}`;
+        body+='\n';
+      });
+    } else { body+=`  Geen dosissen geregistreerd\n`; }
+    if(l?.dayNote) body+=`  Notitie: ${l.dayNote}\n`;
+    if(l?.reflection) body+=`  Reflectie: ${l.reflection}\n`;
+    body+='\n';
+  });
+
+  body+=`\n[Dit rapport werd gegenereerd door Pillr — Rilatine titratie & dagboek]`;
+
+  const subject=encodeURIComponent(`Pillr Medicatierapport — ${name} — ${from} t/m ${to}`);
+  const bodyEnc=encodeURIComponent(body);
+  window.location.href=`mailto:?subject=${subject}&body=${bodyEnc}`;
+  toast('✓ Mail app geopend');
+}
+
+
+function openModal(html){ document.getElementById('modal-box').innerHTML=html; document.getElementById('modal-wrap').classList.add('show'); }
 function closeModal(){ document.getElementById('modal-wrap').classList.remove('show'); }
 function modalBg(e){ if(e.target===document.getElementById('modal-wrap')) closeModal(); }
 
-/* ════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    TOAST
-════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 let _tt;
 function toast(msg){
   const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.style.transform='translateX(-50%) translateY(0)';
-  clearTimeout(_tt);
-  _tt=setTimeout(()=>el.style.transform='translateX(-50%) translateY(80px)',2200);
+  el.textContent=msg; el.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(_tt); _tt=setTimeout(()=>el.style.transform='translateX(-50%) translateY(80px)',2200);
 }
 
-/* ════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    INIT
-════════════════════════════════════════════════════════ */
-load();
+═══════════════════════════════════════════════════ */
+loadState();
 renderToday();
 setInterval(()=>{ if(curTab==='today') renderToday(); }, 60000);
-
-// Service Worker
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
 </html>
